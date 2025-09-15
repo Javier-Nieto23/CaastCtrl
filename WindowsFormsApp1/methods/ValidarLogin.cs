@@ -38,21 +38,27 @@ namespace WindowsFormsApp1
         public bool ValidarLogin(string usuario, string contrasena)
         {
             string connStr = GetConnectionString();
-
-            using (SqlConnection conn = new SqlConnection(connStr))
+            try
             {
-                conn.Open();
-
-                string query = "SELECT COUNT(*) FROM Usuarios_Caast WHERE Nombre_Usuario=@usuario AND Password=@contrasena";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
-                    cmd.Parameters.AddWithValue("@usuario", usuario);
-                    cmd.Parameters.AddWithValue("@contrasena", contrasena);
+                    conn.Open();
 
-                    int count = (int)cmd.ExecuteScalar();
-                    return count > 0;
+                    string query = "SELECT COUNT(*) FROM Usuarios_Caast WHERE Nombre_Usuario=@usuario AND Password=@contrasena";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@usuario", usuario);
+                        cmd.Parameters.AddWithValue("@contrasena", contrasena);
+
+                        int count = (int)cmd.ExecuteScalar();
+                        return count > 0;
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se pudo acceder a la base de datos, revise config.txt", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
     }

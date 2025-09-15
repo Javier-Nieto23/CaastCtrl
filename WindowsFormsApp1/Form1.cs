@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.methods;
-using static WindowsFormsApp1.methods.EmpresasDias;
 using static WindowsFormsApp1.methods.CargarFolios;
+using static WindowsFormsApp1.methods.EmpresasDias;
+using System.IO;
 
 namespace WindowsFormsApp1
 {
@@ -21,7 +23,14 @@ namespace WindowsFormsApp1
             this.StartPosition = FormStartPosition.CenterScreen;
             CargarRestantes();
             CargarFolios();
+
+            FolioGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            FolioGrid.MultiSelect = false; // Opcional, para permitir solo una fila seleccionada
+
         }
+
+
+
         private void CargarFolios()
         {
             CargarFolios carga = new CargarFolios();
@@ -56,27 +65,10 @@ namespace WindowsFormsApp1
             // abrir menu de empresas
             BtnBuscar mainForm = new BtnBuscar();
             mainForm.Show();
-            this.Hide();
+            
         }
 
-        private void button5_Click(object sender, EventArgs e)
-        {
-            DialogResult result = MessageBox.Show(
-                "¿Estás seguro que quieres cerrar sesión?",
-                "Confirmar Cierre de Sesión",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
 
-            if (result == DialogResult.Yes)
-            {
-
-                Application.Exit();
-
-            }
-            // Si elige "No", no se hace nada
-
-        }
 
 
 
@@ -84,19 +76,142 @@ namespace WindowsFormsApp1
         {
             SolicitudServicio mainForm = new SolicitudServicio();
             mainForm.Show();
-            this.Hide();
+
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             Form5 userForm= new Form5();
             userForm.Show();
-            this.Hide();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnEditarFolio_Click(object sender, EventArgs e)
+        {
+            string idFolio = null; // Variable para almacenar el ID del folio seleccionado
+
+            // Verifica que haya una fila seleccionada
+            if (FolioGrid.SelectedRows.Count > 0)
+            {
+                // Obtén el ID del folio de la fila seleccionada
+                 idFolio = FolioGrid.SelectedRows[0].Cells["IDFolio"].Value.ToString();
+            }
+            else if (FolioGrid.CurrentCell != null)
+            {
+                int rowIndex = FolioGrid.CurrentCell.RowIndex;
+                idFolio = FolioGrid.Rows[rowIndex].Cells["IDFolio"].Value.ToString();
+            }
+            if (!string.IsNullOrEmpty(idFolio))
+            {
+                // Abre el formulario Form4 y pasa el ID del folio
+                Form4 editForm = new Form4(idFolio);
+                editForm.Show();
+            }
+            else
+            {
+
+                MessageBox.Show("Selecciona un folio para editar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string idFolio = null;
+
+            // Verifica que haya una fila seleccionada
+            if (FolioGrid.SelectedRows.Count > 0)
+            {
+                idFolio = FolioGrid.SelectedRows[0].Cells["IDFolio"].Value.ToString();
+            }
+            else if (FolioGrid.CurrentCell != null)
+            {
+                int rowIndex = FolioGrid.CurrentCell.RowIndex;
+                idFolio = FolioGrid.Rows[rowIndex].Cells["IDFolio"].Value.ToString();
+            }
+
+            if (string.IsNullOrEmpty(idFolio))
+            {
+                MessageBox.Show("Selecciona un folio para borrar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            DialogResult result = MessageBox.Show(
+                $"¿Seguro que quieres borrar el folio {idFolio} y todos sus datos asociados?",
+                "Confirmar borrado",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (result != DialogResult.Yes)
+                return;
+
+            // Leer la cadena de conexión desde config.txt
+            string filePath = Path.Combine(Application.StartupPath, "config.txt");
+            var config = new System.Collections.Generic.Dictionary<string, string>();
+            foreach (string line in File.ReadAllLines(filePath))
+            {
+                if (!string.IsNullOrWhiteSpace(line) && line.Contains("="))
+                {
+                    var parts = line.Split('=');
+                    config[parts[0].Trim()] = parts[1].Trim();
+                }
+            }
+            string connStr = $"Server={config["Server"]};Database={config["Database"]};User Id={config["User Id"]};Password={config["Password"]};";
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Borrar datos asociados en Hojas_Servicio
+                            string deleteHojas = "DELETE FROM Hojas_Servicio WHERE ID_Folio = @idFolio";
+                            using (SqlCommand cmdHojas = new SqlCommand(deleteHojas, conn, transaction))
+                            {
+                                cmdHojas.Parameters.AddWithValue("@idFolio", idFolio);
+                                cmdHojas.ExecuteNonQuery();
+                            }
+
+                            // Borrar folio en Control_Interno
+                            string deleteFolio = "DELETE FROM Control_Interno WHERE ID_Folio = @idFolio";
+                            using (SqlCommand cmdFolio = new SqlCommand(deleteFolio, conn, transaction))
+                            {
+                                cmdFolio.Parameters.AddWithValue("@idFolio", idFolio);
+                                cmdFolio.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                            MessageBox.Show("Folio y datos asociados borrados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Actualiza el grid
+                            CargarFolios();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show("Error al borrar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error de conexión: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            CargarFolios();
         }
     }
 }

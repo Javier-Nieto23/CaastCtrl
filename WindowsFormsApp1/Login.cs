@@ -29,10 +29,8 @@ namespace WindowsFormsApp1
 
             if (loginService.ValidarLogin(cmbUsuario.Text, cmbPassword.Text))
             {
-                //si se cumple la condicion de ValidarConexion se accede al menu principal
-                Form1 mainForm = new Form1();
-                mainForm.Show();
-                this.Hide();
+                this.DialogResult = DialogResult.OK; // Indica que el login fue exitoso
+                this.Close();
             }
             else
             {

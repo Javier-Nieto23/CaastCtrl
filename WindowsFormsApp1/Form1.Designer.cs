@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button5 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -52,21 +51,14 @@
             this.Fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.btnEditarFolio = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EmpresasGrid)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FolioGrid)).BeginInit();
             this.SuspendLayout();
-            // 
-            // button5
-            // 
-            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
-            this.button5.Location = new System.Drawing.Point(12, 12);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(40, 41);
-            this.button5.TabIndex = 8;
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button1
             // 
@@ -195,7 +187,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.groupBox1.Location = new System.Drawing.Point(71, 12);
+            this.groupBox1.Location = new System.Drawing.Point(16, 13);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(0);
@@ -233,13 +225,15 @@
             // FolioGrid
             // 
             this.FolioGrid.AllowDrop = true;
-            this.FolioGrid.AllowUserToOrderColumns = true;
+            this.FolioGrid.AllowUserToAddRows = false;
+            this.FolioGrid.AllowUserToDeleteRows = false;
             this.FolioGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FolioGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IDFolio,
             this.Fecha});
-            this.FolioGrid.Location = new System.Drawing.Point(483, 224);
+            this.FolioGrid.Location = new System.Drawing.Point(440, 224);
             this.FolioGrid.Name = "FolioGrid";
+            this.FolioGrid.ReadOnly = true;
             this.FolioGrid.Size = new System.Drawing.Size(244, 252);
             this.FolioGrid.TabIndex = 16;
             // 
@@ -247,16 +241,18 @@
             // 
             this.IDFolio.HeaderText = "IDFolio";
             this.IDFolio.Name = "IDFolio";
+            this.IDFolio.ReadOnly = true;
             // 
             // Fecha
             // 
             this.Fecha.HeaderText = "Fecha";
             this.Fecha.Name = "Fecha";
+            this.Fecha.ReadOnly = true;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(480, 205);
+            this.label6.Location = new System.Drawing.Point(437, 205);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 17;
@@ -271,11 +267,44 @@
             this.label7.TabIndex = 18;
             this.label7.Text = "Dias Restantes de Licencia";
             // 
+            // btnEditarFolio
+            // 
+            this.btnEditarFolio.Image = ((System.Drawing.Image)(resources.GetObject("btnEditarFolio.Image")));
+            this.btnEditarFolio.Location = new System.Drawing.Point(691, 224);
+            this.btnEditarFolio.Name = "btnEditarFolio";
+            this.btnEditarFolio.Size = new System.Drawing.Size(43, 41);
+            this.btnEditarFolio.TabIndex = 19;
+            this.btnEditarFolio.UseVisualStyleBackColor = true;
+            this.btnEditarFolio.Click += new System.EventHandler(this.btnEditarFolio_Click);
+            // 
+            // button5
+            // 
+            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
+            this.button5.Location = new System.Drawing.Point(691, 271);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(43, 41);
+            this.button5.TabIndex = 20;
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button7
+            // 
+            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
+            this.button7.Location = new System.Drawing.Point(690, 318);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(43, 41);
+            this.button7.TabIndex = 21;
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(835, 515);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.btnEditarFolio);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.FolioGrid);
@@ -284,7 +313,6 @@
             this.Controls.Add(this.button4);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.EmpresasGrid);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -306,7 +334,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -325,5 +352,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Fecha;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btnEditarFolio;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button7;
     }
 }

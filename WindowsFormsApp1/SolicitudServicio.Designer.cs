@@ -36,6 +36,7 @@
             this.cmbContacto = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.dgvHoja = new System.Windows.Forms.DataGridView();
+            this.HojaCenso = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtNo_Hoja = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -60,7 +61,6 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.button3 = new System.Windows.Forms.Button();
-            this.HojaCenso = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHoja)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -92,7 +92,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(13, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(695, 205);
+            this.groupBox1.Size = new System.Drawing.Size(670, 205);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Solicitud de servicio";
@@ -140,6 +140,12 @@
             this.dgvHoja.Size = new System.Drawing.Size(240, 124);
             this.dgvHoja.TabIndex = 18;
             // 
+            // HojaCenso
+            // 
+            this.HojaCenso.HeaderText = "HojaCenso";
+            this.HojaCenso.Name = "HojaCenso";
+            this.HojaCenso.Width = 200;
+            // 
             // txtNo_Hoja
             // 
             this.txtNo_Hoja.Location = new System.Drawing.Point(420, 40);
@@ -152,7 +158,7 @@
             this.button2.FlatAppearance.BorderSize = 0;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Location = new System.Drawing.Point(568, 30);
+            this.button2.Location = new System.Drawing.Point(559, 29);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(37, 40);
             this.button2.TabIndex = 16;
@@ -275,7 +281,7 @@
             this.groupBox2.Controls.Add(this.dgvServicios);
             this.groupBox2.Location = new System.Drawing.Point(13, 225);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(660, 149);
+            this.groupBox2.Size = new System.Drawing.Size(670, 149);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Descripcion de Servicio";
@@ -287,7 +293,7 @@
             this.dgvServicios.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvServicios.Location = new System.Drawing.Point(3, 16);
             this.dgvServicios.Name = "dgvServicios";
-            this.dgvServicios.Size = new System.Drawing.Size(654, 130);
+            this.dgvServicios.Size = new System.Drawing.Size(664, 130);
             this.dgvServicios.TabIndex = 0;
             // 
             // dataSet1
@@ -307,7 +313,7 @@
             // btnGenerarPDF
             // 
             this.btnGenerarPDF.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerarPDF.Image")));
-            this.btnGenerarPDF.Location = new System.Drawing.Point(627, 380);
+            this.btnGenerarPDF.Location = new System.Drawing.Point(637, 380);
             this.btnGenerarPDF.Name = "btnGenerarPDF";
             this.btnGenerarPDF.Size = new System.Drawing.Size(46, 44);
             this.btnGenerarPDF.TabIndex = 1;
@@ -327,18 +333,12 @@
             // button3
             // 
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
-            this.button3.Location = new System.Drawing.Point(575, 380);
+            this.button3.Location = new System.Drawing.Point(585, 380);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(46, 44);
             this.button3.TabIndex = 4;
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // HojaCenso
-            // 
-            this.HojaCenso.HeaderText = "HojaCenso";
-            this.HojaCenso.Name = "HojaCenso";
-            this.HojaCenso.Width = 200;
             // 
             // SolicitudServicio
             // 
@@ -346,7 +346,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(861, 436);
+            this.ClientSize = new System.Drawing.Size(693, 436);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);

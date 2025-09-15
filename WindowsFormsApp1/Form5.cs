@@ -23,7 +23,12 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             CargarUsuarios();
+           
         }
+
+        
+
+
         private void CargarUsuarios()
         {
             // Instancio la clase usando el constructor
@@ -44,9 +49,9 @@ namespace WindowsFormsApp1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Form1 mainForm = new Form1();
-            mainForm.Show();
-            this.Hide();
+        
+            this.Close();
+    
         }
     }
 }

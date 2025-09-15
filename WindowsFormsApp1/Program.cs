@@ -8,6 +8,7 @@ namespace WindowsFormsApp1
 {
     internal static class Program
     {
+
         /// <summary>
         /// Punto de entrada principal para la aplicación.
         /// </summary>
@@ -16,7 +17,14 @@ namespace WindowsFormsApp1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Login());
+
+            Login login = new Login();
+            if (login.ShowDialog() == DialogResult.OK)
+            {
+                //si  el login es exitoso, se abre el formulario principal
+                Application.Run(new Form1());
+            }
+            
         }
     }
 }

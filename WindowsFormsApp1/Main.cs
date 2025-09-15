@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WindowsFormsApp1.methods;
 
 namespace WindowsFormsApp1
 {
@@ -18,6 +19,7 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             CargarEmpresas();
+          
         }
 
         private void CargarEmpresas(string filtro = "")
@@ -81,7 +83,7 @@ namespace WindowsFormsApp1
         {
             SolicitudServicio mainForm = new SolicitudServicio();
             mainForm.Show();
-            this.Close();
+            this.Hide();
         }
 
         private void BtnBuscar_Load(object sender, EventArgs e)
@@ -91,10 +93,8 @@ namespace WindowsFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
-            // abrir menu de empresas
-            Form1 mainForm = new Form1();
-            mainForm.Show();
-            this.Hide();
+         
+            this.Close();
         }
 
         private void BtnEliminar_Click(object sender, EventArgs e)

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
+using WindowsFormsApp1.methods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static WindowsFormsApp1.conexion;
 
@@ -30,10 +31,9 @@ namespace WindowsFormsApp1
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += SolicitudServicio_Load;
             ConfigurarTablaServicios();
+            
 
-
-        }   
-
+        }
 
 
         //metodo para cargar a los usuarios
@@ -429,9 +429,7 @@ namespace WindowsFormsApp1
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            Form1 mainForm = new Form1();
-            mainForm.Show();
-            this.Hide();
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)

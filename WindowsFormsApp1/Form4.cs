@@ -288,8 +288,7 @@ WHERE ci.ID_Folio = @idFolio";
 
                                 string updateCenso = @"
                                     UPDATE Hojas_Servicio SET
-                                        Descripcion = @Descripcion
-                                        
+                                        Descripcion = @Descripcion   
                                     WHERE ID_Folio = @idFolio";
                                 using (SqlCommand cmd = new SqlCommand(updateCenso, conn, transaction))
                                 {
@@ -306,7 +305,7 @@ WHERE ci.ID_Folio = @idFolio";
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            MessageBox.Show("Error al actualizar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("No Puede Existir una solicitud de servicio sin Hoja de Servicio o Censo ", "Error", MessageBoxButtons.OK);
                         }
                     }
                 }

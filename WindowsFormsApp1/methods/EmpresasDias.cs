@@ -18,7 +18,7 @@ namespace WindowsFormsApp1.methods
             }
 
             // Devuelve un DataTable con Nombre_Empresa y Dias_Restantes
-            public DataTable ObtenerDiasRestantes()
+            public DataTable ObtenerDiasRestantes(string filtro = "")
             {
                 DataTable dt = new DataTable();
                 dt.Columns.Add("Nombre_Empresa", typeof(string));
@@ -31,24 +31,32 @@ namespace WindowsFormsApp1.methods
                     {
                         conn.Open();
                         string query = "SELECT Nombre_Empresa, Fecha_Inicio, Cantidad_Dias FROM Empresas";
-                        SqlCommand cmd = new SqlCommand(query, conn);
-                        SqlDataReader reader = cmd.ExecuteReader();
 
-                        while (reader.Read())
+                        // Aplicamos filtro si no está vacío
+                        if (!string.IsNullOrEmpty(filtro))
+                            query += " WHERE Nombre_Empresa LIKE @filtro OR No_Cliente LIKE @filtro";
+
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
-                            string nombre = reader["Nombre_Empresa"].ToString();
-                            DateTime fechaInicio = Convert.ToDateTime(reader["Fecha_Inicio"]);
-                            int cantidadDias = Convert.ToInt32(reader["Cantidad_Dias"]);
+                            if (!string.IsNullOrEmpty(filtro))
+                                cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
 
-                            // Calcular días restantes
-                            int diasTranscurridos = (DateTime.Now - fechaInicio).Days;
-                            int diasRestantes = cantidadDias - diasTranscurridos;
+                            SqlDataReader reader = cmd.ExecuteReader();
 
-                            // Evitar números negativos
-                            if (diasRestantes < 0) diasRestantes = 0;
+                            while (reader.Read())
+                            {
+                                string nombre = reader["Nombre_Empresa"].ToString();
+                                DateTime fechaInicio = Convert.ToDateTime(reader["Fecha_Inicio"]);
+                                int cantidadDias = Convert.ToInt32(reader["Cantidad_Dias"]);
 
-                            dt.Rows.Add(nombre, diasRestantes,fechaInicio);
+                                // Calcular días restantes
+                                int diasTranscurridos = (DateTime.Now - fechaInicio).Days;
+                                int diasRestantes = cantidadDias - diasTranscurridos;
 
+                                if (diasRestantes < 0) diasRestantes = 0;
+
+                                dt.Rows.Add(nombre, diasRestantes, fechaInicio);
+                            }
                         }
                     }
                 }
@@ -59,6 +67,7 @@ namespace WindowsFormsApp1.methods
 
                 return dt;
             }
+
         }
     }
 }

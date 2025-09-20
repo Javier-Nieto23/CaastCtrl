@@ -21,7 +21,7 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
-            CargarRestantes();
+            //CargarRestantes();
             CargarFolios();
 
             FolioGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -43,21 +43,6 @@ namespace WindowsFormsApp1
                 int index = FolioGrid.Rows.Add();//Añadir nueva fila
                 FolioGrid.Rows[index].Cells["IDFolio"].Value = row["ID_Folio"];
                 FolioGrid.Rows[index].Cells["Fecha"].Value = ((DateTime)row["Fecha_Solicitud"]).ToString("dd/MM/yyyy");//Formateo opcional
-            }
-        }
-        private void CargarRestantes()
-        {
-            LicenciaService service = new LicenciaService();
-            DataTable dt = service.ObtenerDiasRestantes();
-
-            EmpresasGrid.Rows.Clear(); // Limpiar filas anteriores
-
-            foreach (DataRow row in dt.Rows)
-            {
-                int index = EmpresasGrid.Rows.Add(); // Añadir nueva fila
-                EmpresasGrid.Rows[index].Cells["EmpresaNombre"].Value = row["Nombre_Empresa"];
-                EmpresasGrid.Rows[index].Cells["DiasRestantes"].Value = row["Dias_Restantes"];
-                EmpresasGrid.Rows[index].Cells["FechaInicio"].Value = ((DateTime)row["Fecha_Inicio"]).ToString("dd/MM/yyyy"); // Formateo opcional
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -212,6 +197,58 @@ namespace WindowsFormsApp1
         private void button7_Click(object sender, EventArgs e)
         {
             CargarFolios();
+        }
+
+        //metodo para poder filtrar las empresas buscadas 
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string filtro = textBox1.Text.Trim();
+            
+            if(string.IsNullOrEmpty(filtro))
+            {
+               EmpresasGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
+                return;
+            }
+
+            LicenciaService service = new LicenciaService();
+            DataTable dt = service.ObtenerDiasRestantes(filtro);
+
+            EmpresasGrid.Rows.Clear(); // Limpiar filas anteriores
+
+            foreach (DataRow row in dt.Rows)
+            {
+                int index = EmpresasGrid.Rows.Add();
+                EmpresasGrid.Rows[index].Cells["EmpresaNombre"].Value = row["Nombre_Empresa"];
+                EmpresasGrid.Rows[index].Cells["DiasRestantes"].Value = row["Dias_Restantes"];
+                EmpresasGrid.Rows[index].Cells["FechaInicio"].Value = ((DateTime)row["Fecha_Inicio"]).ToString("dd/MM/yyyy");
+            }
+        
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            string filtro = textBox2.Text.Trim();
+
+            if (string.IsNullOrEmpty(filtro))
+            {
+                FolioGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
+                return;
+            }
+
+            CargarFolios service = new CargarFolios();
+            DataTable dt = service.ObtenerFolios(filtro);
+
+             FolioGrid.Rows.Clear(); // Limpiar filas anteriores
+
+            foreach (DataRow row in dt.Rows)
+            {
+                int index = FolioGrid.Rows.Add();
+                FolioGrid.Rows[index].Cells["IDFolio"].Value = row["ID_Folio"];
+
+                FolioGrid.Rows[index].Cells["Fecha_Inicio"].Value = ((DateTime)row["Fecha_Inicio"]).ToString("dd/MM/yyyy");
+            }
+
+
         }
     }
 }

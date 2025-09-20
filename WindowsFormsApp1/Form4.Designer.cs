@@ -30,6 +30,19 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form4));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbRazon_Social2 = new System.Windows.Forms.ComboBox();
+            this.cmbEjecutivo = new System.Windows.Forms.ComboBox();
+            this.cmbNombre_Contacto = new System.Windows.Forms.ComboBox();
+            this.dgvHoja = new System.Windows.Forms.DataGridView();
+            this.HojaCenso = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtPedido = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.txtCotizacion2 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -37,25 +50,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtPedido = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.dgvHoja = new System.Windows.Forms.DataGridView();
-            this.HojaCenso = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dgvServicios = new System.Windows.Forms.DataGridView();
             this.button3 = new System.Windows.Forms.Button();
-            this.cmbNombre_Contacto = new System.Windows.Forms.ComboBox();
-            this.cmbEjecutivo = new System.Windows.Forms.ComboBox();
-            this.cmbRazon_Social2 = new System.Windows.Forms.ComboBox();
-            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHoja)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -84,13 +85,123 @@
             this.groupBox1.Controls.Add(this.dateTimePicker1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.button4);
+            this.groupBox1.Controls.Add(this.button5);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(648, 199);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
+            this.groupBox1.Text = "Folio:";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // cmbRazon_Social2
+            // 
+            this.cmbRazon_Social2.FormattingEnabled = true;
+            this.cmbRazon_Social2.Location = new System.Drawing.Point(15, 88);
+            this.cmbRazon_Social2.Name = "cmbRazon_Social2";
+            this.cmbRazon_Social2.Size = new System.Drawing.Size(175, 21);
+            this.cmbRazon_Social2.TabIndex = 24;
+            // 
+            // cmbEjecutivo
+            // 
+            this.cmbEjecutivo.FormattingEnabled = true;
+            this.cmbEjecutivo.Location = new System.Drawing.Point(15, 169);
+            this.cmbEjecutivo.Name = "cmbEjecutivo";
+            this.cmbEjecutivo.Size = new System.Drawing.Size(175, 21);
+            this.cmbEjecutivo.TabIndex = 23;
+            // 
+            // cmbNombre_Contacto
+            // 
+            this.cmbNombre_Contacto.FormattingEnabled = true;
+            this.cmbNombre_Contacto.Location = new System.Drawing.Point(15, 129);
+            this.cmbNombre_Contacto.Name = "cmbNombre_Contacto";
+            this.cmbNombre_Contacto.Size = new System.Drawing.Size(175, 21);
+            this.cmbNombre_Contacto.TabIndex = 22;
+            // 
+            // dgvHoja
+            // 
+            this.dgvHoja.AllowUserToAddRows = false;
+            this.dgvHoja.AllowUserToDeleteRows = false;
+            this.dgvHoja.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvHoja.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.HojaCenso});
+            this.dgvHoja.Location = new System.Drawing.Point(398, 58);
+            this.dgvHoja.Name = "dgvHoja";
+            this.dgvHoja.Size = new System.Drawing.Size(240, 124);
+            this.dgvHoja.TabIndex = 21;
+            // 
+            // HojaCenso
+            // 
+            this.HojaCenso.HeaderText = "HojaCenso";
+            this.HojaCenso.Name = "HojaCenso";
+            this.HojaCenso.Width = 200;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(211, 169);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(160, 20);
+            this.textBox8.TabIndex = 20;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(208, 152);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(92, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "#Hoja de Servicio";
+            // 
+            // txtPedido
+            // 
+            this.txtPedido.Location = new System.Drawing.Point(211, 32);
+            this.txtPedido.Multiline = true;
+            this.txtPedido.Name = "txtPedido";
+            this.txtPedido.Size = new System.Drawing.Size(160, 30);
+            this.txtPedido.TabIndex = 16;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(208, 72);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(46, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "#Cliente";
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(211, 88);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(160, 20);
+            this.textBox7.TabIndex = 14;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(208, 16);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(47, 13);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "#Pedido";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 153);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(98, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Ejecutivo Asignado";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 113);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Nombre del contacto";
             // 
             // txtCotizacion2
             // 
@@ -150,6 +261,18 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "#Cotizacion";
             // 
+            // button4
+            // 
+            this.button4.FlatAppearance.BorderSize = 0;
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.Location = new System.Drawing.Point(532, 19);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(37, 40);
+            this.button4.TabIndex = 25;
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // button1
             // 
             this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
@@ -158,6 +281,7 @@
             this.button1.Size = new System.Drawing.Size(45, 44);
             this.button1.TabIndex = 6;
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -168,89 +292,6 @@
             this.button2.TabIndex = 7;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 153);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(98, 13);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "Ejecutivo Asignado";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 113);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Nombre del contacto";
-            // 
-            // txtPedido
-            // 
-            this.txtPedido.Location = new System.Drawing.Point(211, 32);
-            this.txtPedido.Multiline = true;
-            this.txtPedido.Name = "txtPedido";
-            this.txtPedido.Size = new System.Drawing.Size(160, 30);
-            this.txtPedido.TabIndex = 16;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(208, 72);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(46, 13);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "#Cliente";
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(211, 88);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(160, 20);
-            this.textBox7.TabIndex = 14;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(208, 16);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(47, 13);
-            this.label8.TabIndex = 13;
-            this.label8.Text = "#Pedido";
-            // 
-            // textBox8
-            // 
-            this.textBox8.Location = new System.Drawing.Point(211, 169);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(160, 20);
-            this.textBox8.TabIndex = 20;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(208, 152);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(92, 13);
-            this.label10.TabIndex = 17;
-            this.label10.Text = "#Hoja de Servicio";
-            // 
-            // dgvHoja
-            // 
-            this.dgvHoja.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvHoja.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.HojaCenso});
-            this.dgvHoja.Location = new System.Drawing.Point(398, 58);
-            this.dgvHoja.Name = "dgvHoja";
-            this.dgvHoja.Size = new System.Drawing.Size(240, 124);
-            this.dgvHoja.TabIndex = 21;
-            // 
-            // HojaCenso
-            // 
-            this.HojaCenso.HeaderText = "HojaCenso";
-            this.HojaCenso.Name = "HojaCenso";
-            this.HojaCenso.Width = 200;
             // 
             // groupBox2
             // 
@@ -283,41 +324,19 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // cmbNombre_Contacto
+            // button5
             // 
-            this.cmbNombre_Contacto.FormattingEnabled = true;
-            this.cmbNombre_Contacto.Location = new System.Drawing.Point(15, 129);
-            this.cmbNombre_Contacto.Name = "cmbNombre_Contacto";
-            this.cmbNombre_Contacto.Size = new System.Drawing.Size(175, 21);
-            this.cmbNombre_Contacto.TabIndex = 22;
-            // 
-            // cmbEjecutivo
-            // 
-            this.cmbEjecutivo.FormattingEnabled = true;
-            this.cmbEjecutivo.Location = new System.Drawing.Point(15, 169);
-            this.cmbEjecutivo.Name = "cmbEjecutivo";
-            this.cmbEjecutivo.Size = new System.Drawing.Size(175, 21);
-            this.cmbEjecutivo.TabIndex = 23;
-            // 
-            // cmbRazon_Social2
-            // 
-            this.cmbRazon_Social2.FormattingEnabled = true;
-            this.cmbRazon_Social2.Location = new System.Drawing.Point(15, 88);
-            this.cmbRazon_Social2.Name = "cmbRazon_Social2";
-            this.cmbRazon_Social2.Size = new System.Drawing.Size(175, 21);
-            this.cmbRazon_Social2.TabIndex = 24;
-            // 
-            // button4
-            // 
-            this.button4.FlatAppearance.BorderSize = 0;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
-            this.button4.Location = new System.Drawing.Point(532, 22);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(37, 40);
-            this.button4.TabIndex = 25;
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button5.BackColor = System.Drawing.SystemColors.Control;
+            this.button5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.button5.FlatAppearance.BorderSize = 0;
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
+            this.button5.Location = new System.Drawing.Point(561, 21);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(46, 38);
+            this.button5.TabIndex = 26;
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click_1);
             // 
             // Form4
             // 
@@ -370,5 +389,6 @@
         private System.Windows.Forms.ComboBox cmbEjecutivo;
         private System.Windows.Forms.ComboBox cmbRazon_Social2;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }

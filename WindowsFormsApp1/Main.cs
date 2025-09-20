@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CaastCtrl;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,7 +20,7 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             CargarEmpresas();
-          
+
         }
 
         private void CargarEmpresas(string filtro = "")
@@ -30,12 +31,12 @@ namespace WindowsFormsApp1
                 {
                     conn.Open();
 
-                    string sql = @"SELECT e.Nombre_Empresa,e.No_Cliente,c.Nombre_Contacto FROM Empresas e 
+                    string sql = @"SELECT Nombre_Empresa,Direccion,No_Cliente,Perfil,Cantidad_Dias,Fecha_Inicio FROM Empresas 
              
-                    INNER JOIN Contacto_Empresa c ON c.ID_Empresa = e.ID_Empresa";
+                    ";//"INNER JOIN Contacto_Empresa c ON c.ID_Empresa = e.ID_Empresa";
 
                     if (!string.IsNullOrEmpty(filtro))
-                        sql += "  WHERE e.Nombre_Empresa LIKE @filtro OR e.No_Cliente LIKE @filtro";
+                        sql += "  WHERE Nombre_Empresa LIKE @filtro OR No_Cliente LIKE @filtro";
 
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
@@ -54,8 +55,11 @@ namespace WindowsFormsApp1
                         {
                             dataGridView1.Rows.Add(
                             row["Nombre_Empresa"].ToString(),
+                            row["Direccion"].ToString(),
                             row["No_Cliente"].ToString(),
-                            row["Nombre_Contacto"].ToString()
+                            row["Perfil"].ToString(),
+                            row["Cantidad_Dias"].ToString()
+
                             );
                         }
                     }
@@ -66,6 +70,8 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Error al cargar empresas: " + ex.Message);
             }
         }
+    
+
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -81,9 +87,9 @@ namespace WindowsFormsApp1
 
         private void BtnNuevo_Click(object sender, EventArgs e)
         {
-            SolicitudServicio mainForm = new SolicitudServicio();
+            RegistroEmpresa mainForm = new RegistroEmpresa();
             mainForm.Show();
-            this.Hide();
+            
         }
 
         private void BtnBuscar_Load(object sender, EventArgs e)

@@ -23,7 +23,8 @@ namespace WindowsFormsApp1
     {
         //variable para generar el folio de la solicitud
         private string folioSolicitud;
-        
+      
+
 
         public SolicitudServicio()
         {
@@ -31,10 +32,34 @@ namespace WindowsFormsApp1
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += SolicitudServicio_Load;
             ConfigurarTablaServicios();
-            
+            int folioPreview = ObtenerSiguienteFolio();
+            groupBox1.Text = $"Datos de la solicitud - Folio: {folioPreview}";
+
 
         }
 
+        //asigna el ultimo folio +1 de la base de datos para mostrarlo en el  groupbox
+        private int ObtenerSiguienteFolio()
+        {
+            int siguienteFolio = 5000;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = "SELECT ISNULL(MAX(ID_Folio), 4999) + 1 FROM Control_Interno";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        siguienteFolio = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+            }
+            catch
+            {
+                // Si hay error, se mantiene el valor por defecto
+            }
+            return siguienteFolio;
+        }
 
         //metodo para cargar a los usuarios
         private void CargarEjecutivos()

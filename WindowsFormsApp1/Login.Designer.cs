@@ -72,7 +72,7 @@
             // 
             this.cmbPassword.Location = new System.Drawing.Point(22, 99);
             this.cmbPassword.Name = "cmbPassword";
-            this.cmbPassword.PasswordChar = '*';
+            this.cmbPassword.PasswordChar = '●';
             this.cmbPassword.Size = new System.Drawing.Size(126, 20);
             this.cmbPassword.TabIndex = 3;
             this.cmbPassword.TextChanged += new System.EventHandler(this.cmbPassword_TextChanged);

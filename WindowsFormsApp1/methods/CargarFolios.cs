@@ -16,7 +16,7 @@ namespace WindowsFormsApp1.methods
         }
 
         // Método que devuelve los folios (ID y Fecha)
-        public DataTable ObtenerFolios()
+        public DataTable ObtenerFolios(string filtroFolio = "")
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("ID_Folio", typeof(int));
@@ -28,16 +28,23 @@ namespace WindowsFormsApp1.methods
                 {
                     conn.Open();
                     string query = "SELECT ID_Folio, Fecha_Solicitud FROM Control_Interno";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    SqlDataReader reader = cmd.ExecuteReader();
 
-                    while (reader.Read())
+                    if(!string.IsNullOrEmpty(filtroFolio))
+                        query += " WHERE ID_Folio LIKE @filtro ";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        int folio = Convert.ToInt32(reader["ID_Folio"]);
-                        DateTime fecha = Convert.ToDateTime(reader["Fecha_Solicitud"]);
-
-                        dt.Rows.Add(folio, fecha);
+                        if (!string.IsNullOrEmpty(filtroFolio))
+                            cmd.Parameters.AddWithValue("@filtro", "%" + filtroFolio + "%");
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int folio = Convert.ToInt32(reader["ID_Folio"]);
+                            DateTime fecha = Convert.ToDateTime(reader["Fecha_Solicitud"]);
+                            dt.Rows.Add(folio, fecha);
+                        }
                     }
+
                 }
             }
             catch (Exception ex)

@@ -20,6 +20,23 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.AcceptButton = BtnIniciarSesion; // Al presionar Enter se ejecuta btnLogin_Click
             this.StartPosition = FormStartPosition.CenterScreen;
+
+
+            // Verificar existencia de config.txt
+            string configPath = System.IO.Path.Combine(Application.StartupPath, "config.txt");
+            if (!System.IO.File.Exists(configPath))
+            {
+                CaastCtrl.CrearConexion crearConexion = new CaastCtrl.CrearConexion();
+                crearConexion.ShowDialog();
+
+                // Verificar nuevamente si se creó el archivo
+                if (!System.IO.File.Exists(configPath))
+                {
+                    MessageBox.Show("No se pudo crear el archivo de configuración. La aplicación no puede continuar.",
+                                    "Error de configuración", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit();
+                }
+            }
         }
 
         private void BtnIniciarSesion_Click(object sender, EventArgs e)

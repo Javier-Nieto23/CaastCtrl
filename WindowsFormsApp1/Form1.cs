@@ -12,6 +12,7 @@ using WindowsFormsApp1.methods;
 using static WindowsFormsApp1.methods.CargarFolios;
 using static WindowsFormsApp1.methods.EmpresasDias;
 using System.IO;
+using CaastCtrl;
 
 namespace WindowsFormsApp1
 {
@@ -21,8 +22,7 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
-            //CargarRestantes();
-            CargarFolios();
+
 
             FolioGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             FolioGrid.MultiSelect = false; // Opcional, para permitir solo una fila seleccionada
@@ -31,20 +31,6 @@ namespace WindowsFormsApp1
 
 
 
-        private void CargarFolios()
-        {
-            CargarFolios carga = new CargarFolios();
-            DataTable dt = carga.ObtenerFolios();
-
-            FolioGrid.Rows.Clear();// limpiar las filas anteriores
-
-            foreach (DataRow row in dt.Rows)
-            {
-                int index = FolioGrid.Rows.Add();//Añadir nueva fila
-                FolioGrid.Rows[index].Cells["IDFolio"].Value = row["ID_Folio"];
-                FolioGrid.Rows[index].Cells["Fecha"].Value = ((DateTime)row["Fecha_Solicitud"]).ToString("dd/MM/yyyy");//Formateo opcional
-            }
-        }
         private void button1_Click(object sender, EventArgs e)
         {
             // abrir menu de empresas
@@ -177,8 +163,9 @@ namespace WindowsFormsApp1
                             transaction.Commit();
                             MessageBox.Show("Folio y datos asociados borrados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                            //CargarFolios folios = new CargarFolios();   
                             // Actualiza el grid
-                            CargarFolios();
+                            //folios.ObtenerFolios();
                         }
                         catch (Exception ex)
                         {
@@ -196,22 +183,23 @@ namespace WindowsFormsApp1
 
         private void button7_Click(object sender, EventArgs e)
         {
-            CargarFolios();
+          VentanaFolios folios = new VentanaFolios();
+            folios.Show();  
         }
 
         //metodo para poder filtrar las empresas buscadas 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            string filtro = textBox1.Text.Trim();
+            string filtroEmpresa = textBox1.Text.Trim();
             
-            if(string.IsNullOrEmpty(filtro))
+            if(string.IsNullOrEmpty(filtroEmpresa))
             {
                EmpresasGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
                 return;
             }
 
             LicenciaService service = new LicenciaService();
-            DataTable dt = service.ObtenerDiasRestantes(filtro);
+            DataTable dt = service.ObtenerDiasRestantes(filtroEmpresa);
 
             EmpresasGrid.Rows.Clear(); // Limpiar filas anteriores
 
@@ -227,16 +215,16 @@ namespace WindowsFormsApp1
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            string filtro = textBox2.Text.Trim();
+            string filtroFolio = textBox2.Text.Trim();
 
-            if (string.IsNullOrEmpty(filtro))
+            if (string.IsNullOrEmpty(filtroFolio))
             {
                 FolioGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
                 return;
             }
 
             CargarFolios service = new CargarFolios();
-            DataTable dt = service.ObtenerFolios(filtro);
+            DataTable dt = service.ObtenerFolios(filtroFolio);
 
              FolioGrid.Rows.Clear(); // Limpiar filas anteriores
 
@@ -245,9 +233,14 @@ namespace WindowsFormsApp1
                 int index = FolioGrid.Rows.Add();
                 FolioGrid.Rows[index].Cells["IDFolio"].Value = row["ID_Folio"];
 
-                FolioGrid.Rows[index].Cells["Fecha_Inicio"].Value = ((DateTime)row["Fecha_Inicio"]).ToString("dd/MM/yyyy");
+                FolioGrid.Rows[index].Cells["Fecha"].Value = ((DateTime)row["Fecha_Solicitud"]).ToString("dd/MM/yyyy");
             }
 
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
 
         }
     }

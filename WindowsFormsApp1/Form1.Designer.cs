@@ -43,8 +43,10 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.FolioGrid = new System.Windows.Forms.DataGridView();
             this.IDFolio = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -53,7 +55,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.btnEditarFolio = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
@@ -77,7 +78,7 @@
             // button3
             // 
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
-            this.button3.Location = new System.Drawing.Point(121, 15);
+            this.button3.Location = new System.Drawing.Point(210, 15);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(90, 79);
             this.button3.TabIndex = 3;
@@ -87,9 +88,9 @@
             // button2
             // 
             this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Location = new System.Drawing.Point(341, 15);
+            this.button2.Location = new System.Drawing.Point(419, 15);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(90, 79);
+            this.button2.Size = new System.Drawing.Size(90, 80);
             this.button2.TabIndex = 2;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -107,7 +108,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 98);
+            this.label1.Location = new System.Drawing.Point(24, 97);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 13);
             this.label1.TabIndex = 4;
@@ -115,21 +116,22 @@
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(113, 98);
+            this.label2.Location = new System.Drawing.Point(207, 98);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.Size = new System.Drawing.Size(101, 28);
             this.label2.TabIndex = 9;
-            this.label2.Text = "Solicitud de servicio";
+            this.label2.Text = "Crear solicitud de servicio";
+            this.label2.UseCompatibleTextRendering = true;
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(347, 97);
+            this.label3.Location = new System.Drawing.Point(440, 97);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(84, 13);
+            this.label3.Size = new System.Drawing.Size(48, 13);
             this.label3.TabIndex = 10;
-            this.label3.Text = "Perfil de Usuario";
+            this.label3.Text = "Usuarios";
             // 
             // EmpresasGrid
             // 
@@ -187,10 +189,12 @@
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.Menu;
             this.groupBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.button6);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.button7);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label3);
@@ -200,27 +204,45 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBox1.Size = new System.Drawing.Size(441, 126);
+            this.groupBox1.Size = new System.Drawing.Size(578, 139);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(95, 98);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(112, 13);
+            this.label10.TabIndex = 22;
+            this.label10.Text = "Solicitudes de servicio";
+            // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(221, 98);
+            this.label5.Location = new System.Drawing.Point(315, 98);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(113, 13);
+            this.label5.Size = new System.Drawing.Size(113, 28);
             this.label5.TabIndex = 12;
-            this.label5.Text = "Solicitud de cotizacion";
+            this.label5.Text = "Crear solicitud de cotizacion";
             // 
             // button6
             // 
             this.button6.Image = ((System.Drawing.Image)(resources.GetObject("button6.Image")));
-            this.button6.Location = new System.Drawing.Point(230, 16);
+            this.button6.Location = new System.Drawing.Point(314, 15);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(93, 79);
+            this.button6.Size = new System.Drawing.Size(93, 80);
             this.button6.TabIndex = 11;
             this.button6.UseVisualStyleBackColor = true;
+            // 
+            // button7
+            // 
+            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
+            this.button7.Location = new System.Drawing.Point(107, 15);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(90, 79);
+            this.button7.TabIndex = 21;
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // label4
             // 
@@ -229,7 +251,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 15;
-            this.label4.Text = "Version 0.0.1A";
+            this.label4.Text = "Version 0.0.2A";
             // 
             // FolioGrid
             // 
@@ -296,16 +318,6 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button7
-            // 
-            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
-            this.button7.Location = new System.Drawing.Point(690, 318);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(43, 41);
-            this.button7.TabIndex = 21;
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -351,7 +363,6 @@
             this.Controls.Add(this.button8);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.button7);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.btnEditarFolio);
             this.Controls.Add(this.label7);
@@ -408,5 +419,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label10;
     }
 }

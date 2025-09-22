@@ -13,9 +13,7 @@ namespace WindowsFormsApp1.methods
     {
         public class LicenciaService
         {
-            public LicenciaService()
-            {
-            }
+            
 
             // Devuelve un DataTable con Nombre_Empresa y Dias_Restantes
             public DataTable ObtenerDiasRestantes(string filtro = "")

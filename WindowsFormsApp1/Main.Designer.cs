@@ -87,7 +87,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(76, 13);
             this.label1.TabIndex = 10;
-            this.label1.Text = "Version 0.0.1A";
+            this.label1.Text = "Version 0.0.2A";
             // 
             // button1
             // 
@@ -143,6 +143,7 @@
             this.BtnModificar.Size = new System.Drawing.Size(35, 34);
             this.BtnModificar.TabIndex = 3;
             this.BtnModificar.UseVisualStyleBackColor = true;
+            this.BtnModificar.Click += new System.EventHandler(this.BtnModificar_Click);
             // 
             // pictureBox1
             // 

@@ -11,9 +11,7 @@ namespace WindowsFormsApp1.methods
 {
     internal class CargarFolios
     {
-        public CargarFolios()
-        {
-        }
+       
 
         // Método que devuelve los folios (ID y Fecha)
         public DataTable ObtenerFolios(string filtroFolio = "")

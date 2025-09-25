@@ -59,6 +59,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button9 = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EmpresasGrid)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -88,7 +90,7 @@
             // button2
             // 
             this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Location = new System.Drawing.Point(419, 15);
+            this.button2.Location = new System.Drawing.Point(530, 16);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(90, 80);
             this.button2.TabIndex = 2;
@@ -98,9 +100,9 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(616, -20);
+            this.pictureBox1.Location = new System.Drawing.Point(691, -4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(239, 172);
+            this.pictureBox1.Size = new System.Drawing.Size(164, 127);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -116,18 +118,18 @@
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(207, 98);
+            this.label2.Location = new System.Drawing.Point(220, 98);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 28);
             this.label2.TabIndex = 9;
-            this.label2.Text = "Crear solicitud de servicio";
+            this.label2.Text = "Generar Folio";
             this.label2.UseCompatibleTextRendering = true;
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(440, 97);
+            this.label3.Location = new System.Drawing.Point(551, 97);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 13);
             this.label3.TabIndex = 10;
@@ -189,6 +191,8 @@
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.Menu;
             this.groupBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.groupBox1.Controls.Add(this.button9);
+            this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.button6);
@@ -204,7 +208,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBox1.Size = new System.Drawing.Size(578, 139);
+            this.groupBox1.Size = new System.Drawing.Size(657, 139);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             // 
@@ -223,7 +227,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(113, 28);
             this.label5.TabIndex = 12;
-            this.label5.Text = "Crear solicitud de cotizacion";
+            this.label5.Text = "Generar Cotizacion";
             // 
             // button6
             // 
@@ -251,7 +255,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 15;
-            this.label4.Text = "Version 0.0.2A";
+            this.label4.Text = "Version 0.0.1A";
             // 
             // FolioGrid
             // 
@@ -354,6 +358,25 @@
             this.textBox2.TabIndex = 23;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
+            // button9
+            // 
+            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
+            this.button9.Location = new System.Drawing.Point(424, 16);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(90, 80);
+            this.button9.TabIndex = 23;
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(435, 98);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(69, 13);
+            this.label11.TabIndex = 24;
+            this.label11.Text = "Solicitar Folio";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -420,5 +443,7 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Label label11;
     }
 }

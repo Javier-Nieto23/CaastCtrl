@@ -107,6 +107,12 @@
     <Compile Include="methods\CargarUsuarios.cs" />
     <Compile Include="methods\EmpresasDias.cs" />
     <Compile Include="methods\SolicitudService.cs" />
+    <Compile Include="SocilitarFolio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SocilitarFolio.Designer.cs">
+      <DependentUpon>SocilitarFolio.cs</DependentUpon>
+    </Compile>
     <Compile Include="SolicitudServicio.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +157,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SocilitarFolio.resx">
+      <DependentUpon>SocilitarFolio.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SolicitudServicio.resx">
       <DependentUpon>SolicitudServicio.cs</DependentUpon>

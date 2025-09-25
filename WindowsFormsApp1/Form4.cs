@@ -60,6 +60,12 @@ namespace WindowsFormsApp1
             tipoEquipoCol.HeaderText = "Tipo de Equipo";
             dgvServicios.Columns.Add(tipoEquipoCol);
 
+            // Columna Tipo de Servicio (ComboBox)
+            DataGridViewComboBoxColumn tipoSistemaCol = new DataGridViewComboBoxColumn();
+            tipoSistemaCol.Name = "Tipo_Sistema";
+            tipoSistemaCol.HeaderText = "Sistema";          
+            dgvServicios.Columns.Add(tipoSistemaCol);
+
             // Columna Descripcion (texto)
             DataGridViewTextBoxColumn descripcionCol = new DataGridViewTextBoxColumn();
             descripcionCol.Name = "Descripcion";
@@ -72,12 +78,13 @@ namespace WindowsFormsApp1
             // --- Extraer opciones para los ComboBox desde la base de datos ---
             var equipos = new HashSet<string>();
             var servicios = new HashSet<string>();
+            var sistema = new HashSet<string>();
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
                 string query = @"
-                    SELECT TOP 1 hs.Descripcion, ci.Tipo_Equipo, ci.Tipo_Servicio
+                    SELECT TOP 1 hs.Descripcion, ci.Tipo_Equipo, ci.Tipo_Servicio,ci.Tipo_Sistema
                     FROM Control_Interno as ci
                     INNER JOIN Hojas_Servicio as hs ON ci.ID_Folio = hs.ID_Folio
                     WHERE ci.ID_Folio = @idFolio";
@@ -91,6 +98,8 @@ namespace WindowsFormsApp1
                             // Agrega opciones únicas a los ComboBox
                             if (reader["Tipo_Equipo"] != DBNull.Value)
                                 equipos.Add(reader["Tipo_Equipo"].ToString());
+                            if (reader["Tipo_Sistema"] != DBNull.Value)
+                                sistema.Add(reader["Tipo_Sistema"].ToString());
                             if (reader["Tipo_Servicio"] != DBNull.Value)
                                 servicios.Add(reader["Tipo_Servicio"].ToString());
 
@@ -99,6 +108,7 @@ namespace WindowsFormsApp1
 
                                 reader["Tipo_Servicio"]?.ToString() ?? "",
                                 reader["Tipo_Equipo"]?.ToString() ?? "",
+                                reader["Tipo_Sistema"]?.ToString() ?? "",
                                 reader["Descripcion"]?.ToString() ?? ""
 
                             );
@@ -112,13 +122,27 @@ namespace WindowsFormsApp1
             tipoEquipoCol.Items.Add("Escritorio");
             tipoEquipoCol.Items.Add("Portatil");
             tipoEquipoCol.Items.Add("Servidor");
-            // ... agrega más si lo necesitas
+            
 
             tipoServicioCol.Items.AddRange(servicios.ToArray());
-            tipoServicioCol.Items.Add("Reparación");
-            tipoServicioCol.Items.Add("Mantenimiento");
-            tipoServicioCol.Items.Add("Instalación");
-            // ... agrega más si lo necesitas
+            tipoServicioCol.Items.AddRange("Activacion");
+            tipoServicioCol.Items.AddRange("Actualizacion");
+            tipoServicioCol.Items.AddRange("Configuracion");
+            tipoServicioCol.Items.AddRange("Respaldo");
+            tipoServicioCol.Items.AddRange("Restauracion");
+            tipoServicioCol.Items.AddRange("Revision");
+            tipoServicioCol.Items.AddRange("Servicio");
+            tipoServicioCol.Items.AddRange("Instalación");
+
+
+            tipoSistemaCol.Items.AddRange(sistema.ToArray());
+            tipoSistemaCol.Items.Add("N/A");
+            tipoSistemaCol.Items.Add("MSQL");
+            tipoSistemaCol.Items.Add("SEER Trafico");
+            tipoSistemaCol.Items.Add("Office");
+            tipoSistemaCol.Items.Add("Antivirus");
+            tipoSistemaCol.Items.Add("Otros");
+            tipoSistemaCol.Items.Add("MSQL BD");
 
             // --- Mostrar solo censos marcados como 'Si' en dgvHoja ---
             dgvHoja.Rows.Clear();
@@ -271,19 +295,22 @@ namespace WindowsFormsApp1
                             {
                                 var tipoServicio = dgvServicios.Rows[0].Cells["Tipo_Servicio"].Value?.ToString();
                                 var tipoEquipo = dgvServicios.Rows[0].Cells["Tipo_Equipo"].Value?.ToString();
+                                var tipoSistema = dgvServicios.Rows[0].Cells["Tipo_Sistema"].Value?.ToString();
 
 
 
                                 string updateServicio = @"
                                     UPDATE Control_Interno SET
                                         Tipo_Servicio = @TipoServicio,
-                                        Tipo_Equipo = @TipoEquipo
+                                        Tipo_Equipo = @TipoEquipo,
+                                        Tipo_Sistema = @TipoSistema
                                         
                                     WHERE ID_Folio = @idFolio";
                                 using (SqlCommand cmd = new SqlCommand(updateServicio, conn, transaction))
                                 {
                                     cmd.Parameters.AddWithValue("@TipoServicio", string.IsNullOrEmpty(tipoServicio) ? (object)DBNull.Value : tipoServicio);
                                     cmd.Parameters.AddWithValue("@TipoEquipo", string.IsNullOrEmpty(tipoEquipo) ? (object)DBNull.Value : tipoEquipo);
+                                    cmd.Parameters.AddWithValue("@TipoSistema", string.IsNullOrEmpty(tipoSistema) ? (object)DBNull.Value : tipoSistema);
 
                                     cmd.Parameters.AddWithValue("@idFolio", _idFolio);
                                     cmd.ExecuteNonQuery();
@@ -419,11 +446,19 @@ namespace WindowsFormsApp1
                 doc.Open();
 
 
-                iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance("C:/imagenes/logo caast.png");
+                string basePath = Application.StartupPath;
+
+                // Combina la ruta de la carpeta "imagenes" con el archivo
+                string logoPath = Path.Combine(basePath, "imagenes", "logo caast.png");
+
+                // Carga la imagen
+                iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
                 logo.ScaleAbsolute(150, 150); // tamaño del logo
                 logo.Alignment = Element.ALIGN_RIGHT;
                 logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 170,
-                         doc.PageSize.Height - doc.TopMargin - 100);
+                                         doc.PageSize.Height - doc.TopMargin - 100);
+
+                // Agregar al documento
                 doc.Add(logo);
 
                 // Folio en la parte superior izquierda
@@ -591,10 +626,11 @@ namespace WindowsFormsApp1
                 doc.Add(new Paragraph("\n"));
 
                 // Tabla de servicios
-                PdfPTable tablaServicios = new PdfPTable(3);
+                PdfPTable tablaServicios = new PdfPTable(4);
                 tablaServicios.WidthPercentage = 100;
                 tablaServicios.AddCell("Tipo de Servicio");
                 tablaServicios.AddCell("Equipo");
+                tablaServicios.AddCell("Tipo Sistema");
                 tablaServicios.AddCell("Descripción");
 
                 // Recorrer filas del DataGridView
@@ -604,6 +640,7 @@ namespace WindowsFormsApp1
 
                     tablaServicios.AddCell(row.Cells["Tipo_Servicio"].Value?.ToString());
                     tablaServicios.AddCell(row.Cells["Tipo_Equipo"].Value?.ToString());
+                    tablaServicios.AddCell(row.Cells["Tipo_Sistema"].Value?.ToString());
                     tablaServicios.AddCell(row.Cells["Descripcion"].Value?.ToString());
                 }
 

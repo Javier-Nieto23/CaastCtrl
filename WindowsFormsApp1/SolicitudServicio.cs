@@ -133,7 +133,7 @@ namespace WindowsFormsApp1
             DataGridViewComboBoxColumn tipoServicioCol = new DataGridViewComboBoxColumn();
             tipoServicioCol.Name = "Tipo_Servicio";
             tipoServicioCol.HeaderText = "Tipo de Servicio";
-            tipoServicioCol.Items.AddRange("Reparación", "Mantenimiento", "Instalación");
+            tipoServicioCol.Items.AddRange("Activacion", "Actualizacion", "Configuracion", "Respaldo", "Restauracion", "Revision", "Servicio", "Instalación");
             dgvServicios.Columns.Add(tipoServicioCol);
 
             // Columna Equipo (ComboBox)
@@ -143,6 +143,12 @@ namespace WindowsFormsApp1
             equipoCol.Items.AddRange("Escritorio", "Portatil");
             dgvServicios.Columns.Add(equipoCol);
 
+            // Columna Tipo de Servicio (ComboBox)
+            DataGridViewComboBoxColumn tipoSistemaCol = new DataGridViewComboBoxColumn();
+            tipoSistemaCol.Name = "Tipo_Sistema";
+            tipoSistemaCol.HeaderText = "Sistema";
+            tipoSistemaCol.Items.AddRange("N/A", "MSQL", "SEER Trafico", "Office", "Antivirus", "Otros", "MSQL BD");
+            dgvServicios.Columns.Add(tipoSistemaCol);
 
             // Columna Descripción (Texto normal)
             DataGridViewTextBoxColumn descripcionCol = new DataGridViewTextBoxColumn();
@@ -242,11 +248,19 @@ namespace WindowsFormsApp1
                 doc.Open();
 
 
-                iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance("C:/imagenes/logo caast.png");
+                string basePath = Application.StartupPath;
+
+                // Combina la ruta de la carpeta "imagenes" con el archivo
+                string logoPath = Path.Combine(basePath, "imagenes", "logo caast.png");
+
+                // Carga la imagen
+                iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
                 logo.ScaleAbsolute(150, 150); // tamaño del logo
                 logo.Alignment = Element.ALIGN_RIGHT;
                 logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 170,
-                         doc.PageSize.Height - doc.TopMargin - 100);
+                                         doc.PageSize.Height - doc.TopMargin - 100);
+
+                // Agregar al documento
                 doc.Add(logo);
 
                 // Folio en la parte superior izquierda
@@ -414,10 +428,11 @@ namespace WindowsFormsApp1
                 doc.Add(new Paragraph("\n"));
 
                 // Tabla de servicios
-                PdfPTable tablaServicios = new PdfPTable(3);
+                PdfPTable tablaServicios = new PdfPTable(4);
                 tablaServicios.WidthPercentage = 100;
                 tablaServicios.AddCell("Tipo de Servicio");
                 tablaServicios.AddCell("Equipo");
+                tablaServicios.AddCell("Tipo Sistema");
                 tablaServicios.AddCell("Descripción");
 
                 // Recorrer filas del DataGridView
@@ -427,6 +442,7 @@ namespace WindowsFormsApp1
 
                     tablaServicios.AddCell(row.Cells["Tipo_Servicio"].Value?.ToString());
                     tablaServicios.AddCell(row.Cells["Equipo"].Value?.ToString());
+                    tablaServicios.AddCell(row.Cells["Tipo_Sistema"].Value?.ToString());
                     tablaServicios.AddCell(row.Cells["Descripcion"].Value?.ToString());
                 }
 
@@ -492,12 +508,14 @@ namespace WindowsFormsApp1
                         {
                             //toma los valores de la primera fila del dgvServicios (cabecera del servicio)
                             string tipoServicioCab = null;
+                            string tipoSistemaCab = null;
                             string tipoEquipoCab = null;
                             string descripcionCab = null;
 
 
                             if (dgvServicios.Rows.Count > 0 && !dgvServicios.Rows[0].IsNewRow) {
                                 tipoServicioCab = dgvServicios.Rows[0].Cells["Tipo_Servicio"].Value?.ToString();
+                                tipoSistemaCab = dgvServicios.Rows[0].Cells["Tipo_Servicio"].Value?.ToString();
                                 tipoEquipoCab = dgvServicios.Rows[0].Cells["Equipo"].Value?.ToString();
                                 descripcionCab = dgvServicios.Rows[0].Cells["Descripcion"].Value?.ToString();
 
@@ -505,8 +523,8 @@ namespace WindowsFormsApp1
                             // --- Insertar cabecera en Control_Interno ---
                             string queryControlInterno = @"
                             INSERT INTO Control_Interno
-                            (ID_Folio, No_Cotizacion, No_Pedido, Razon_Social, No_Cliente, Nombre_Contacto, Fecha_Solicitud, Ejecutivo_Asignado, Tipo_Servicio, Tipo_Equipo)
-                            VALUES ((SELECT ISNULL(MAX(ID_Folio), 4999) + 1 FROM Control_Interno), @NoCotizacion, @NoPedido, @RazonSocial, @NoCliente, @NombreContacto, @FechaSolicitud, @Ejecutivo, @TipoServicio, @TipoEquipo);
+                            (ID_Folio, No_Cotizacion, No_Pedido, Razon_Social, No_Cliente, Nombre_Contacto, Fecha_Solicitud, Ejecutivo_Asignado, Tipo_Servicio, Tipo_Equipo,Tipo_Sistema)
+                            VALUES ((SELECT ISNULL(MAX(ID_Folio), 4999) + 1 FROM Control_Interno), @NoCotizacion, @NoPedido, @RazonSocial, @NoCliente, @NombreContacto, @FechaSolicitud, @Ejecutivo, @TipoServicio, @TipoEquipo,@TipoSistema);
                             SELECT SCOPE_IDENTITY();";
 
                             int idFolioCon;       // ID_Folio_Con generado automáticamente
@@ -523,6 +541,7 @@ namespace WindowsFormsApp1
                                 cmd.Parameters.AddWithValue("@FechaSolicitud", dtpFecha.Value);
                                 cmd.Parameters.AddWithValue("@Ejecutivo", cmbEjecutivo.Text);
                                 cmd.Parameters.AddWithValue("@TipoServicio",(object)tipoServicioCab ?? DBNull.Value);
+                                cmd.Parameters.AddWithValue("@TipoSistema", (object)tipoSistemaCab ?? DBNull.Value);
                                 cmd.Parameters.AddWithValue("@TipoEquipo", (object)tipoEquipoCab ??DBNull.Value);
                                 
 

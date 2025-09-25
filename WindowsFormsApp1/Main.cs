@@ -98,8 +98,40 @@ namespace WindowsFormsApp1
         {
             try
 
-            {   
-                using(SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                // Validación: campos obligatorios
+                if (string.IsNullOrWhiteSpace(textBox3.Text)) // Nombre_Empresa
+                {
+                    MessageBox.Show("Por favor ingrese el nombre de la empresa.");
+                    textBox3.Focus();
+                    return;
+                }
+                // Validación: campos obligatorios
+                if (string.IsNullOrWhiteSpace(textBox2.Text)) // Dirección
+                {
+                    MessageBox.Show("Por favor ingrese la dirección de la empresa.");
+                    textBox2.Focus();
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(textBox4.Text)) // No_Cliente
+                {
+                    MessageBox.Show("Por favor ingrese el número de cliente.");
+                    textBox4.Focus();
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(textBox5.Text)) // Cantidad_Dias
+                {
+                    MessageBox.Show("Por favor ingrese la cantidad de días.");
+                    textBox5.Focus();
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(comboBox1.Text)) // Perfil
+                {
+                    MessageBox.Show("Por favor ingrese el perfil de la empresa.");
+                    textBox3.Focus();
+                    return;
+                }
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
                 {
                     DateTime fechaseleccionada = dateTimePicker1.Value;
                     conn.Open();

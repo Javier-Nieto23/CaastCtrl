@@ -9,6 +9,8 @@ namespace WindowsFormsApp1
     //en esta clase se valida que los datos ingresados son correctos 
     public class LoginService
     {
+        //atrubuto estatico para guardar el id del usuario actual
+        public static int IdUsuarioActual { get; private set; }
         private string GetConnectionString()
         {
             // Ruta dinámica donde está el .exe
@@ -43,15 +45,24 @@ namespace WindowsFormsApp1
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     conn.Open();
-
-                    string query = "SELECT COUNT(*) FROM Usuarios_Caast WHERE Nombre_Usuario=@usuario AND Password=@contrasena";
+                    
+                    string query = "SELECT ID_Usuario FROM Usuarios_Caast WHERE Nombre_Usuario=@usuario AND Password=@contrasena";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@usuario", usuario);
                         cmd.Parameters.AddWithValue("@contrasena", contrasena);
 
-                        int count = (int)cmd.ExecuteScalar();
-                        return count > 0;
+                        
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            IdUsuarioActual = Convert.ToInt32(result);
+                            return true; // Login exitoso
+                        }
+                        else
+                        {
+                                                       return false; // Login fallido
+                        }
                     }
                 }
             }

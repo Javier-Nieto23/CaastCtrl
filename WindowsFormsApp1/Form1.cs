@@ -45,10 +45,36 @@ namespace WindowsFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
-            SolicitudServicio mainForm = new SolicitudServicio();
-            mainForm.Show();
+            using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                conn.Open();
+                string TipoUsuario = "";
 
-            
+                string query = "SELECT Tipo_Usuario FROM Usuarios_Caast WHERE ID_Usuario = @idUsuario";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    LoginService loginService = new LoginService();
+                    cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        TipoUsuario = reader["Tipo_Usuario"].ToString();
+                    }
+                }
+
+                // Ahora sí comparas el valor obtenido
+                if (TipoUsuario != "Admin")
+                {
+                    MessageBox.Show("No puedes ingresar si no eres admin");
+                }
+                else
+                {
+                    SolicitudServicio mainForm = new SolicitudServicio();
+                    mainForm.Show();
+                }
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -242,6 +268,12 @@ namespace WindowsFormsApp1
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            SocilitarFolio solicitarform = new SocilitarFolio();
+            solicitarform.Show();
         }
     }
 }

@@ -29,83 +29,36 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.EmpresasGrid = new System.Windows.Forms.DataGridView();
-            this.EmpresaNombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DiasRestantes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FechaInicio = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button9 = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.FolioGrid = new System.Windows.Forms.DataGridView();
             this.IDFolio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.btnEditarFolio = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.button8 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button9 = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.EmpresasGrid)).BeginInit();
+            this.button5 = new System.Windows.Forms.Button();
+            this.btnEditarFolio = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FolioGrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
-            this.button1.Location = new System.Drawing.Point(6, 15);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(90, 79);
-            this.button1.TabIndex = 1;
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button3
-            // 
-            this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
-            this.button3.Location = new System.Drawing.Point(210, 15);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(90, 79);
-            this.button3.TabIndex = 3;
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button2
-            // 
-            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Location = new System.Drawing.Point(530, 16);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(90, 80);
-            this.button2.TabIndex = 2;
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(691, -4);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(164, 127);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // label1
             // 
@@ -129,68 +82,19 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(551, 97);
+            this.label3.Location = new System.Drawing.Point(652, 97);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 13);
             this.label3.TabIndex = 10;
             this.label3.Text = "Usuarios";
             // 
-            // EmpresasGrid
-            // 
-            this.EmpresasGrid.AllowUserToAddRows = false;
-            this.EmpresasGrid.AllowUserToDeleteRows = false;
-            this.EmpresasGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.EmpresasGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.EmpresaNombre,
-            this.DiasRestantes,
-            this.FechaInicio});
-            this.EmpresasGrid.Location = new System.Drawing.Point(12, 224);
-            this.EmpresasGrid.Name = "EmpresasGrid";
-            this.EmpresasGrid.ReadOnly = true;
-            this.EmpresasGrid.Size = new System.Drawing.Size(393, 252);
-            this.EmpresasGrid.TabIndex = 11;
-            // 
-            // EmpresaNombre
-            // 
-            this.EmpresaNombre.HeaderText = "EmpresaNombre";
-            this.EmpresaNombre.Name = "EmpresaNombre";
-            this.EmpresaNombre.ReadOnly = true;
-            this.EmpresaNombre.Width = 150;
-            // 
-            // DiasRestantes
-            // 
-            this.DiasRestantes.HeaderText = "DiasRestantes";
-            this.DiasRestantes.Name = "DiasRestantes";
-            this.DiasRestantes.ReadOnly = true;
-            // 
-            // FechaInicio
-            // 
-            this.FechaInicio.HeaderText = "FechaInicio";
-            this.FechaInicio.Name = "FechaInicio";
-            this.FechaInicio.ReadOnly = true;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(16, 176);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(250, 26);
-            this.textBox1.TabIndex = 12;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // button4
-            // 
-            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
-            this.button4.Location = new System.Drawing.Point(272, 176);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(32, 26);
-            this.button4.TabIndex = 13;
-            this.button4.UseVisualStyleBackColor = true;
-            // 
             // groupBox1
             // 
+            this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox1.BackColor = System.Drawing.SystemColors.Menu;
             this.groupBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Controls.Add(this.button9);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.label10);
@@ -208,9 +112,28 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBox1.Size = new System.Drawing.Size(657, 139);
+            this.groupBox1.Size = new System.Drawing.Size(739, 139);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
+            // 
+            // button9
+            // 
+            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
+            this.button9.Location = new System.Drawing.Point(424, 16);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(90, 80);
+            this.button9.TabIndex = 23;
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(435, 98);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(69, 13);
+            this.label11.TabIndex = 24;
+            this.label11.Text = "Solicitar Folio";
             // 
             // label10
             // 
@@ -238,6 +161,26 @@
             this.button6.TabIndex = 11;
             this.button6.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.Location = new System.Drawing.Point(6, 15);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(90, 79);
+            this.button1.TabIndex = 1;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
+            this.button2.Location = new System.Drawing.Point(631, 16);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(90, 80);
+            this.button2.TabIndex = 2;
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // button7
             // 
             this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
@@ -248,14 +191,24 @@
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
+            // button3
+            // 
+            this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
+            this.button3.Location = new System.Drawing.Point(210, 15);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(90, 79);
+            this.button3.TabIndex = 3;
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(747, 493);
+            this.label4.Location = new System.Drawing.Point(820, 493);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 15;
-            this.label4.Text = "Version 0.0.1A";
+            this.label4.Text = "Version 0.0.3A";
             // 
             // FolioGrid
             // 
@@ -266,7 +219,7 @@
             this.FolioGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IDFolio,
             this.Fecha});
-            this.FolioGrid.Location = new System.Drawing.Point(440, 224);
+            this.FolioGrid.Location = new System.Drawing.Point(46, 67);
             this.FolioGrid.Name = "FolioGrid";
             this.FolioGrid.ReadOnly = true;
             this.FolioGrid.Size = new System.Drawing.Size(244, 252);
@@ -287,125 +240,102 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(437, 205);
+            this.label6.Location = new System.Drawing.Point(43, 51);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 17;
             this.label6.Text = "Folios";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 205);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(137, 13);
-            this.label7.TabIndex = 18;
-            this.label7.Text = "Dias Restantes de Licencia";
-            // 
-            // btnEditarFolio
-            // 
-            this.btnEditarFolio.Image = ((System.Drawing.Image)(resources.GetObject("btnEditarFolio.Image")));
-            this.btnEditarFolio.Location = new System.Drawing.Point(691, 224);
-            this.btnEditarFolio.Name = "btnEditarFolio";
-            this.btnEditarFolio.Size = new System.Drawing.Size(43, 41);
-            this.btnEditarFolio.TabIndex = 19;
-            this.btnEditarFolio.UseVisualStyleBackColor = true;
-            this.btnEditarFolio.Click += new System.EventHandler(this.btnEditarFolio_Click);
-            // 
-            // button5
-            // 
-            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
-            this.button5.Location = new System.Drawing.Point(691, 271);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(43, 41);
-            this.button5.TabIndex = 20;
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 157);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(88, 13);
-            this.label8.TabIndex = 22;
-            this.label8.Text = "Buscar empresas";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(440, 157);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(67, 13);
-            this.label9.TabIndex = 25;
-            this.label9.Text = "Buscar folios";
-            // 
-            // button8
-            // 
-            this.button8.Image = ((System.Drawing.Image)(resources.GetObject("button8.Image")));
-            this.button8.Location = new System.Drawing.Point(696, 176);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(32, 26);
-            this.button8.TabIndex = 24;
-            this.button8.UseVisualStyleBackColor = true;
-            // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(440, 176);
+            this.textBox2.Location = new System.Drawing.Point(46, 19);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(250, 26);
             this.textBox2.TabIndex = 23;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
-            // button9
+            // button5
             // 
-            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
-            this.button9.Location = new System.Drawing.Point(424, 16);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(90, 80);
-            this.button9.TabIndex = 23;
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
+            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
+            this.button5.Location = new System.Drawing.Point(302, 114);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(43, 41);
+            this.button5.TabIndex = 20;
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // label11
+            // btnEditarFolio
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(435, 98);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(69, 13);
-            this.label11.TabIndex = 24;
-            this.label11.Text = "Solicitar Folio";
+            this.btnEditarFolio.Image = ((System.Drawing.Image)(resources.GetObject("btnEditarFolio.Image")));
+            this.btnEditarFolio.Location = new System.Drawing.Point(302, 67);
+            this.btnEditarFolio.Name = "btnEditarFolio";
+            this.btnEditarFolio.Size = new System.Drawing.Size(43, 41);
+            this.btnEditarFolio.TabIndex = 19;
+            this.btnEditarFolio.UseVisualStyleBackColor = true;
+            this.btnEditarFolio.Click += new System.EventHandler(this.btnEditarFolio_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(762, -4);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(164, 127);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.FolioGrid);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.btnEditarFolio);
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.button5);
+            this.groupBox2.Location = new System.Drawing.Point(16, 159);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(350, 331);
+            this.groupBox2.TabIndex = 26;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Buscar Folios";
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            // 
+            // button4
+            // 
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.Location = new System.Drawing.Point(530, 16);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(90, 80);
+            this.button4.TabIndex = 25;
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(529, 98);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(99, 28);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "Activacion/\r\nRenovacion";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(835, 515);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.btnEditarFolio);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.FolioGrid);
+            this.ClientSize = new System.Drawing.Size(908, 515);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.EmpresasGrid);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "CaastCtrl";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.EmpresasGrid)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FolioGrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,30 +350,23 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DataGridView EmpresasGrid;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EmpresaNombre;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DiasRestantes;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FechaInicio;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.DataGridView FolioGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn IDFolio;
         private System.Windows.Forms.DataGridViewTextBoxColumn Fecha;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btnEditarFolio;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Button button8;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label7;
     }
 }

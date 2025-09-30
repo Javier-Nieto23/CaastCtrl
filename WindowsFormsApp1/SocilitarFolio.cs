@@ -18,7 +18,11 @@ namespace CaastCtrl
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
-            
+            comboBox1.Items.Add("HDS");
+            comboBox1.Items.Add("HDC");
+
+            comboBox1.SelectedIndex = 0; // Selección por defecto
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -33,8 +37,10 @@ namespace CaastCtrl
 
                 using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
                 {
+
                     conn.Open();
-                    string query = "INSERT INTO Solicitud_Folio (Nombre_Empresa,Fecha_Solicitud,Descripcion,Hoja) VALUES (@Nombre,@Fecha,@Descripcion,@Hoja)";
+                    string query = "INSERT INTO Solicitud_Folio (Nombre_Empresa,Fecha_Solicitud,Descripcion,Hoja,Status_Folio) VALUES (@Nombre,@Fecha,@Descripcion,@Hoja,'Solicitado')";
+
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Nombre", comboBox2.Text.Trim());

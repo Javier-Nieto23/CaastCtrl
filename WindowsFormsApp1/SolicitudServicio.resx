@@ -120,9 +120,6 @@
   <metadata name="HojaCenso.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="HojaCenso.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="button2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -184,6 +181,19 @@
         bE6hYAjuwKbLEq7Aa70FzSkUmDFwqx2XcAgzkPtzkbaCXqT/Am/yREVabYi2Aq+/N8/PquB3G/A7hYIp
         8L1VaPVrW7EG9kxCTKFgHR5CWSv22BtTKKj7NI2xx96Yf0Eu/RN0e2TGNAs8M5ydnMMtKPFRXffQj9hj
         r7WznHkKyQicgTaX1AucxfBk+BssRckRo7wH/gAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="button4.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
+        6QAAAOkBVJIUSwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFlSURBVFhH7Ze9
+        LgVBAEa3EkRPhxegkYiOTpQSDYnHEA+gkvAKt9dodBQUPIKotUSjkRCcs2yymcz+3Jv9kbhfcm5mZr+d
+        +XZ3ZvdO8te1AQM4q8EF3AdtZZzCHBRqAd7gFmIdhNzBV9BWxiPcQKG2wQ4n0lq1dkB/Xe3Bx08xrmE7
+        bNw/DtB7gEPQ0DaF2gUNJq2D63oUf6E0lRoCNe7/PwGOYclCoM4C+PMCK1ZyWgOPHYDmKoadhOfg9yA9
+        6fmXZRtyOoFX0NM0Dr4JaWUfLiF2J1qXAbwlU9BLiCyAmoYr8HHEJmYrygdQTr5PcHV0onwAJ+ET+E9l
+        xoYulAXoZXBlgCOIDW55CwxYhR8vv6CxYzF81KkMIE4+J2EmB3+A7Hgb+J5J3iEcXHnlmhbTWrW8Kv11
+        5RvWl1yyCpMWAg3bYeP+cYDeNybz4NbMLVdsaxUyytbsGkq1Dm1tTl2Cs9CnkuQb+yEDbqPpQEQAAAAA
+        SUVORK5CYII=
 </value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -23,12 +23,41 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
 
-
             FolioGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             FolioGrid.MultiSelect = false; // Opcional, para permitir solo una fila seleccionada
-
+            GridFolios();
         }
 
+        //metodo para llenar el datagridview con los folios
+
+        public void GridFolios()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    con.Open();
+                    string sql = @"SELECT ID_Folio,Fecha_Solicitud FROM Control_Interno";
+                    SqlDataAdapter da = new SqlDataAdapter(sql, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    FolioGrid.Rows.Clear();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        //convierte la fecha al formato dd/MM/yyyy
+                        DateTime fecha = Convert.ToDateTime(dr["Fecha_Solicitud"]);
+                        FolioGrid.Rows.Add(
+                        dr["ID_Folio"].ToString(),
+                        fecha.ToString("MM/dd/yyyy")
+                        );
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar los folios: " + ex.Message);
+            }
+        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -64,7 +93,7 @@ namespace WindowsFormsApp1
                     }
                 }
 
-                // Ahora sí comparas el valor obtenido
+                // Verificar si el usuario es admin
                 if (TipoUsuario != "Admin")
                 {
                     MessageBox.Show("No puedes ingresar si no eres admin");
@@ -213,56 +242,33 @@ namespace WindowsFormsApp1
             folios.Show();  
         }
 
-        //metodo para poder filtrar las empresas buscadas 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            string filtroEmpresa = textBox1.Text.Trim();
-            
-            if(string.IsNullOrEmpty(filtroEmpresa))
-            {
-               EmpresasGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
-                return;
-            }
 
-            LicenciaService service = new LicenciaService();
-            DataTable dt = service.ObtenerDiasRestantes(filtroEmpresa);
-
-            EmpresasGrid.Rows.Clear(); // Limpiar filas anteriores
-
-            foreach (DataRow row in dt.Rows)
-            {
-                int index = EmpresasGrid.Rows.Add();
-                EmpresasGrid.Rows[index].Cells["EmpresaNombre"].Value = row["Nombre_Empresa"];
-                EmpresasGrid.Rows[index].Cells["DiasRestantes"].Value = row["Dias_Restantes"];
-                EmpresasGrid.Rows[index].Cells["FechaInicio"].Value = ((DateTime)row["Fecha_Inicio"]).ToString("dd/MM/yyyy");
-            }
-        
-        }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             string filtroFolio = textBox2.Text.Trim();
+            CargarFolios service = new CargarFolios();
+            DataTable dt;
 
             if (string.IsNullOrEmpty(filtroFolio))
             {
-                FolioGrid.Rows.Clear(); // Cargar todas las empresas si el filtro está vacío
-                return;
+                // Si no hay filtro, obtener todos los folios
+                dt = service.ObtenerFolios(); // sin parámetro devuelve todos
+            }
+            else
+            {
+                // Si hay texto, aplicar filtro
+                dt = service.ObtenerFolios(filtroFolio);
             }
 
-            CargarFolios service = new CargarFolios();
-            DataTable dt = service.ObtenerFolios(filtroFolio);
-
-             FolioGrid.Rows.Clear(); // Limpiar filas anteriores
+            FolioGrid.Rows.Clear(); // Limpiar filas anteriores
 
             foreach (DataRow row in dt.Rows)
             {
                 int index = FolioGrid.Rows.Add();
                 FolioGrid.Rows[index].Cells["IDFolio"].Value = row["ID_Folio"];
-
                 FolioGrid.Rows[index].Cells["Fecha"].Value = ((DateTime)row["Fecha_Solicitud"]).ToString("dd/MM/yyyy");
             }
-
-
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -274,6 +280,11 @@ namespace WindowsFormsApp1
         {
             SocilitarFolio solicitarform = new SocilitarFolio();
             solicitarform.Show();
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

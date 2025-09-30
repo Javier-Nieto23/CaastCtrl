@@ -618,7 +618,7 @@ namespace WindowsFormsApp1
                                 string queryUpdate = @"
                             UPDATE Solicitud_Folio
                             SET Status_Folio = 'Abierto'
-                            WHERE ID_Folio_Con = @IDFolio";
+                            WHERE ID_Folio_Con = @IDFolio"; 
                                 using (SqlCommand cmdUpdate = new SqlCommand(queryUpdate, conn, transaction))
                                 {
                                     cmdUpdate.Parameters.AddWithValue("@IDFolio", folioSolicitudExistenteSeleccionada.Value);

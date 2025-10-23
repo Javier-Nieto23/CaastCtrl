@@ -22,7 +22,7 @@ namespace WindowsFormsApp1.methods
                 {
 
                     conn.Open();
-                    string query = "SELECT Nombre_Usuario, Tipo_Usuario FROM Usuarios_CAAST";
+                    string query = "SELECT Nombre_Usuario,Nombre,Apellido, Tipo_Usuario FROM Usuarios_CAAST";
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     da.Fill(dt);
 

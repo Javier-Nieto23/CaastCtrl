@@ -30,7 +30,10 @@ namespace WindowsFormsApp1
 
             comboBox1.SelectedIndex = 0; // Selección por defecto
             CargarUsuarios();
-            
+
+            UsuariosGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            UsuariosGrid.MultiSelect = false;
+
 
         }
 
@@ -103,14 +106,16 @@ namespace WindowsFormsApp1
 
 
 
-                        string sqlInsert = @"INSERT INTO Usuarios_Caast (Nombre_Usuario,Password,Tipo_Usuario) 
-                                       VALUES (@Nombre_Usuario,@Contraseña,@Tipo_Usuario)";
+                        string sqlInsert = @"INSERT INTO Usuarios_Caast (Nombre_Usuario,Password,Tipo_Usuario,Firma_Tecnico,Nombre,Apellido) 
+                                       VALUES (@Nombre_Usuario,@Contraseña,@Tipo_Usuario,@FimaElectronica,@Nombre,@Apellido)";
                         using (SqlCommand cmd = new SqlCommand(sqlInsert, conn))
                         {
                             cmd.Parameters.AddWithValue("@Nombre_Usuario", textBox1.Text.Trim());
                             cmd.Parameters.AddWithValue("@Contraseña", textBox2.Text.Trim());
                             cmd.Parameters.AddWithValue("@Tipo_Usuario", comboBox1.Text.Trim());
-
+                            cmd.Parameters.AddWithValue("@FimaElectronica", textBox3.Text.Trim()); 
+                            cmd.Parameters.AddWithValue("@Nombre", textBox4.Text.Trim());
+                            cmd.Parameters.AddWithValue("@Apellido", textBox5.Text.Trim());
                             int rowsAffected = cmd.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {

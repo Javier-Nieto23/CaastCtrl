@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using CaastCtrl;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using WindowsFormsApp1.methods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static WindowsFormsApp1.conexion;
@@ -34,12 +36,79 @@ namespace WindowsFormsApp1
             ConfigurarTablaServicios();
             int folioPreview = ObtenerSiguienteFolio();
 
+            dataGridView1.MultiSelect = false;                   // Una sola fila a la vez
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;  // Selecciona toda la fila
+            dataGridView1.ReadOnly = true;                      // Evita edición directa
+            dataGridView1.AllowUserToAddRows = false;           // Evita fila vacía al final
+
             // Asignar folio al TextBox en lugar del GroupBox
             textBox1.Text = folioPreview.ToString();
+            txtCotizacion.Text = "0";
+            txtPedido.Text = "0";
+
+            cmbProveedor.DropDownStyle = ComboBoxStyle.DropDown;
+            cmbProveedor.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbProveedor.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+            cmbContacto.DropDownStyle = ComboBoxStyle.DropDown;
+            cmbContacto.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbContacto.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+            cmbEjecutivo.DropDownStyle = ComboBoxStyle.DropDown;
+            cmbEjecutivo.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbEjecutivo.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+            dgvHoja.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvHoja.MultiSelect = false; // Opcional, para permitir solo una fila seleccionada
+        }
 
 
+        private void LimpiarCampos()
+        {
+            txtCotizacion.Clear();
+            txtPedido.Clear();
+            txtServicio.Clear();
+            cmbCliente.Clear();
+            cmbContacto.SelectedIndex = -1;
+            cmbProveedor.SelectedIndex = -1;
+            cmbEjecutivo.SelectedIndex = -1;
+            dtpFecha.Value = DateTime.Now;
+            dgvServicios.Rows.Clear();
+            dgvHoja.Rows.Clear();
+            folioSolicitudExistenteSeleccionada = null;
+            textBox1.Clear();
+            if (textBox1 == null)
+            {
+                int folioPreview = ObtenerSiguienteFolio();
+                textBox1.Text = folioPreview.ToString();
+            }
+
+            ObtenerSiguienteFolio();
 
         }
+
+
+
+        private string ObtenerFirmaTecnicoActual()
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                conn.Open();
+                string query = @"
+                        SELECT 
+                            COALESCE(Firma_Tecnico, CONCAT(Nombre, ' ', Apellido)) AS Firma
+                        FROM Usuarios_Caast
+                        WHERE ID_Usuario = @idUsuario";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+                    object result = cmd.ExecuteScalar();
+                    return result?.ToString() ?? "Firma desconocida";
+                }
+            }
+        }
+
 
         //metodo para validar que el folio no exista en la base de datos
         private bool FolioExiste(int folio)
@@ -70,13 +139,13 @@ namespace WindowsFormsApp1
         //asigna el ultimo folio +1 de la base de datos para mostrarlo en el  groupbox
         private int ObtenerSiguienteFolio()
         {
-            int siguienteFolio = 5000;
+            int siguienteFolio = 3000;
             try
             {
                 using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
                 {
                     conn.Open();
-                    string query = "SELECT ISNULL(MAX(ID_Folio), 4999) + 1 FROM Control_Interno";
+                    string query = "SELECT ISNULL(MAX(ID_Folio), 2999) + 1 FROM Control_Interno";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         siguienteFolio = Convert.ToInt32(cmd.ExecuteScalar());
@@ -94,7 +163,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-                string query = "Select ID_Folio_Con,Nombre_Empresa,Fecha_Solicitud,Descripcion,Hoja,Status_Folio from Solicitud_Folio";
+                string query = "Select sf.ID_Folio_Con,sf.Nombre_Empresa,sf.Fecha_Solicitud,sf.Descripcion,sf.Hoja,sf.Status_Folio,sf.Nombre_Contacto,uc.Nombre_Usuario from Solicitud_Folio as sf inner join Usuarios_Caast uc on sf.Ejecutivo = uc.ID_Usuario  WHERE sf.Status_Folio = 'Solicitado'";
                 using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
                 {
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
@@ -155,7 +224,9 @@ namespace WindowsFormsApp1
 
                     while (reader.Read())
                     {
-                        cmbProveedor.Items.Add(reader["Nombre_Empresa"].ToString());
+                        // Puedes mostrar solo el nombre, o combinarlo con el ID o nombre corto
+                        string display = $"{reader["Nombre_Empresa"]} ";
+                        cmbProveedor.Items.Add(display);
                     }
 
                     reader.Close();
@@ -187,9 +258,9 @@ namespace WindowsFormsApp1
 
             // Columna Equipo (ComboBox)
             DataGridViewComboBoxColumn equipoCol = new DataGridViewComboBoxColumn();
-            equipoCol.Name = "Equipo";
+            equipoCol.Name = "Tipo_Equipo";
             equipoCol.HeaderText = "Equipo";
-            equipoCol.Items.AddRange("Escritorio", "Portatil");
+            equipoCol.Items.AddRange("Escritorio", "Portatil","Servidor");
             dgvServicios.Columns.Add(equipoCol);
 
             // Columna Tipo de Servicio (ComboBox)
@@ -261,7 +332,6 @@ namespace WindowsFormsApp1
                 // Validación de campos obligatorios
                 if (string.IsNullOrWhiteSpace(txtCotizacion.Text) ||
                     string.IsNullOrWhiteSpace(txtPedido.Text) ||
-                    //string.IsNullOrWhiteSpace(txtHojaServicio.Text) ||
                     string.IsNullOrWhiteSpace(cmbCliente.Text) ||
                     string.IsNullOrWhiteSpace(cmbContacto.Text) ||
                     string.IsNullOrWhiteSpace(cmbProveedor.Text) ||
@@ -305,19 +375,14 @@ namespace WindowsFormsApp1
                 // Carga la imagen
                 iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
                 logo.ScaleAbsolute(150, 150); // tamaño del logo
-                logo.Alignment = Element.ALIGN_RIGHT;
-                logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 170,
-                                         doc.PageSize.Height - doc.TopMargin - 100);
+                logo.Alignment = Element.ALIGN_LEFT;
+                logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 790,
+                                         doc.PageSize.Height - doc.TopMargin - 98);
 
                 // Agregar al documento
                 doc.Add(logo);
 
-                // Folio en la parte superior izquierda
-                Paragraph folioEncabezado = new Paragraph("Folio: " + folioSolicitud,
-                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD));
-                folioEncabezado.Alignment = Element.ALIGN_LEFT; // 👈 alineado a la izquierda
-                doc.Add(folioEncabezado);
-                doc.Add(new Paragraph("\n"));
+
 
 
                 // Título 3
@@ -329,18 +394,18 @@ namespace WindowsFormsApp1
                 doc.Add(new Paragraph("\n"));
 
                 // Título 1
-                Paragraph titulo = new Paragraph("Solicitud de Servicio",
+                Paragraph titulo = new Paragraph("Solicitud de Servicio: " + folioSolicitud,
                                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD));
                 titulo.Alignment = Element.ALIGN_CENTER;
 
                 doc.Add(titulo);
-                doc.Add(new Paragraph("\n"));
+                doc.Add(new Paragraph(" "));
 
+               
                 // se crea la tabla Solicitud de servicio
                 PdfPTable tabla = new PdfPTable(4);
                 //ancho de la segunda tabla
                 tabla.WidthPercentage = 100;
-                //tabla.SetWidths(new float[] { 50f, 50f,50f,50f });//proporcion de las columnas
 
                 iTextSharp.text.Font fuenteNegrita =
                 new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD);
@@ -353,8 +418,9 @@ namespace WindowsFormsApp1
                 PdfPCell cellCenso = new PdfPCell(new Phrase("Hoja de Censo", fuenteNegrita));
                 cellCenso.HorizontalAlignment = Element.ALIGN_CENTER;
                 cellCenso.BackgroundColor = new BaseColor(220, 220, 220);
+                cellCenso.FixedHeight = 29f;
                 tabla.AddCell(cellCenso);
-                cellCenso.FixedHeight = 30f;
+                
 
                 // Columna 2: concatenar todas las hojas de censo
                 string hojasCenso = string.Join(", ", dgvHoja.Rows
@@ -369,16 +435,13 @@ namespace WindowsFormsApp1
                 PdfPCell cellServicio = new PdfPCell(new Phrase("Hoja de Servicio", fuenteNegrita));
                 cellServicio.HorizontalAlignment = Element.ALIGN_CENTER;
                 cellServicio.BackgroundColor = new BaseColor(220, 220, 220);
+                cellServicio.FixedHeight = 29f;
                 tabla.AddCell(cellServicio);
-                cellServicio.FixedHeight = 30f;
+                
 
                 // --- Agregar fila ---
                 // Columna 1: folio del servicio
                 tabla.AddCell(new PdfPCell(new Phrase(txtServicio.Text.Trim(), fuenteNormal)));
-
-
-
-
 
 
                 PdfPCell celda1 = new PdfPCell(new Phrase("Razon social"));
@@ -484,15 +547,29 @@ namespace WindowsFormsApp1
                 tablaServicios.AddCell("Tipo Sistema");
                 tablaServicios.AddCell("Descripción");
 
+                tablaServicios.SetWidths(new float[] { 2f, 2f, 2f, 2f });
+
+
+                // Encabezados con negrita
+                iTextSharp.text.Font fuenteEncabezado =
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD);
+
+
+
+                float altoFilaServicios = 35f;
+
+
+
+
                 // Recorrer filas del DataGridView
                 foreach (DataGridViewRow row in dgvServicios.Rows)
                 {
                     if (row.IsNewRow) continue;
 
-                    tablaServicios.AddCell(row.Cells["Tipo_Servicio"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Equipo"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Tipo_Sistema"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Descripcion"].Value?.ToString());
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Servicio"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Equipo"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Sistema"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Descripcion"].Value?.ToString())) { FixedHeight = altoFilaServicios });
                 }
 
 
@@ -503,15 +580,23 @@ namespace WindowsFormsApp1
 
 
 
+                
+
+                string firma = ObtenerFirmaTecnicoActual();
+                Paragraph firmaParrafo = new Paragraph($"Firmado por: {firma}\nFecha: {DateTime.Now:MM/dd/yyyy}\nHora:{DateTime.Now: hh:mm:tt}",new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 16, iTextSharp.text.Font.BOLD));
+                firmaParrafo.Alignment = Element.ALIGN_LEFT;
+                doc.Add(firmaParrafo);
+                // se debe colocar un if cuya condicion es si el usuario tiene firma personalizada en la base de datos se digita su firma, de lo contrario solo se colocar la firma del usuario actual
+
                 // Pie
                 doc.Add(new Paragraph("Generado automáticamente por el sistema de CAAST",
                             new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.ITALIC)));
-
 
                 doc.Close();
                 //mensaje de archivo generado
                 MessageBox.Show("PDF generado correctamente ", "Éxito",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             }
         }
 
@@ -571,26 +656,14 @@ namespace WindowsFormsApp1
                     {
                         try
                         {
-                            // Valores de la primera fila del dgvServicios
-                            string tipoServicioCab = null;
-                            string tipoSistemaCab = null;
-                            string tipoEquipoCab = null;
-                            string descripcionCab = null;
-
-                            if (dgvServicios.Rows.Count > 0 && !dgvServicios.Rows[0].IsNewRow)
-                            {
-                                tipoServicioCab = dgvServicios.Rows[0].Cells["Tipo_Servicio"].Value?.ToString();
-                                tipoSistemaCab = dgvServicios.Rows[0].Cells["Tipo_Sistema"].Value?.ToString();
-                                tipoEquipoCab = dgvServicios.Rows[0].Cells["Equipo"].Value?.ToString();
-                                descripcionCab = dgvServicios.Rows[0].Cells["Descripcion"].Value?.ToString();
-                            }
+                            
 
                             // Insertar cabecera en Control_Interno
                             string queryControlInterno = @"
-                        INSERT INTO Control_Interno
-                        (ID_Folio, No_Cotizacion, No_Pedido, Razon_Social, No_Cliente, Nombre_Contacto, Fecha_Solicitud, Ejecutivo_Asignado, Tipo_Servicio, Tipo_Equipo,Tipo_Sistema)
-                        VALUES (@IDFolio, @NoCotizacion, @NoPedido, @RazonSocial, @NoCliente, @NombreContacto, @FechaSolicitud, @Ejecutivo, @TipoServicio, @TipoEquipo,@TipoSistema);
-                        SELECT SCOPE_IDENTITY();";
+                            INSERT INTO Control_Interno
+                            (ID_Folio, No_Cotizacion, No_Pedido, Razon_Social, No_Cliente, Nombre_Contacto, Fecha_Solicitud, Ejecutivo_Asignado)
+                            VALUES (@IDFolio, @NoCotizacion, @NoPedido, @RazonSocial, @NoCliente, @NombreContacto, @FechaSolicitud, @Ejecutivo);
+                            SELECT SCOPE_IDENTITY();";
 
                             int idFolioCon;
                             int idFolioVisible;
@@ -605,30 +678,40 @@ namespace WindowsFormsApp1
                                 cmd.Parameters.AddWithValue("@NombreContacto", cmbContacto.Text);
                                 cmd.Parameters.AddWithValue("@FechaSolicitud", dtpFecha.Value);
                                 cmd.Parameters.AddWithValue("@Ejecutivo", cmbEjecutivo.Text);
-                                cmd.Parameters.AddWithValue("@TipoServicio", (object)tipoServicioCab ?? DBNull.Value);
-                                cmd.Parameters.AddWithValue("@TipoSistema", (object)tipoSistemaCab ?? DBNull.Value);
-                                cmd.Parameters.AddWithValue("@TipoEquipo", (object)tipoEquipoCab ?? DBNull.Value);
+                                
 
                                 idFolioCon = Convert.ToInt32(cmd.ExecuteScalar());
                             }
 
-                            // --- Actualizar la fila seleccionada de Solicitud_Folio si aplica ---
+                            string queryGetFolio = "SELECT ID_Folio FROM Control_Interno WHERE ID_Folio_Con = @IDFolio_Con";
+                            using (SqlCommand cmdFolio = new SqlCommand(queryGetFolio, conn, transaction))
+                            {
+                                cmdFolio.Parameters.AddWithValue("@IDFolio_Con", idFolioCon);
+                                idFolioVisible = Convert.ToInt32(cmdFolio.ExecuteScalar());
+                            }
+
+
                             if (folioSolicitudExistenteSeleccionada.HasValue)
                             {
                                 string queryUpdate = @"
-                            UPDATE Solicitud_Folio
-                            SET Status_Folio = 'Abierto'
-                            WHERE ID_Folio_Con = @IDFolio"; 
+                                UPDATE Solicitud_Folio
+                                SET Status_Folio = 'Abierto',
+                                ID_Folio = @nuevoIDFolio
+                                WHERE ID_Folio_Con = @IDFolio";
                                 using (SqlCommand cmdUpdate = new SqlCommand(queryUpdate, conn, transaction))
                                 {
+                                    cmdUpdate.Parameters.AddWithValue("@nuevoIDFolio", idFolioVisible);
                                     cmdUpdate.Parameters.AddWithValue("@IDFolio", folioSolicitudExistenteSeleccionada.Value);
+
                                     cmdUpdate.ExecuteNonQuery();
                                 }
                             }
 
+
+
                             // Obtener ID_Folio para usar en Hojas_Servicio
-                            string queryGetFolio = "SELECT ID_Folio FROM Control_Interno WHERE ID_Folio_Con = @IDFolio_Con";
-                            using (SqlCommand cmdFolio = new SqlCommand(queryGetFolio, conn, transaction))
+                            string queryGetFolioSol = "SELECT ID_Folio FROM Control_Interno WHERE ID_Folio_Con = @IDFolio_Con";
+                            using (SqlCommand cmdFolio = new SqlCommand(queryGetFolioSol, conn, transaction))
                             {
                                 cmdFolio.Parameters.AddWithValue("@IDFolio_Con", idFolioCon);
                                 idFolioVisible = Convert.ToInt32(cmdFolio.ExecuteScalar());
@@ -638,20 +721,29 @@ namespace WindowsFormsApp1
                             foreach (DataGridViewRow row in dgvServicios.Rows)
                             {
                                 if (row.IsNewRow) continue;
-
+                                string tipoServicio = row.Cells["Tipo_Servicio"].Value?.ToString();
+                                string tipoEquipo = row.Cells["Tipo_Equipo"].Value?.ToString();
+                                string tipoSistema = row.Cells["Tipo_Sistema"].Value?.ToString();
+                                string descripcion = row.Cells["Descripcion"].Value?.ToString();
                                 string queryHojaServicio = @"
-                            INSERT INTO Hojas_Servicio 
-                            (ID_Folio, Folio_Hoja, Descripcion,Censo)
-                            VALUES (@IDFolio, @FolioHoja,@Descripcion, @Censo)";
+                                INSERT INTO Hojas_Servicio 
+                                (ID_Folio, Folio_Hoja, Tipo_Servicio, Tipo_Equipo, Tipo_Sistema, Descripcion, Censo)
+                                VALUES (@IDFolio, @FolioHoja, @TipoServicio, @TipoEquipo, @TipoSistema, @Descripcion, @Censo)";
+
                                 using (SqlCommand cmdHojaServ = new SqlCommand(queryHojaServicio, conn, transaction))
                                 {
                                     cmdHojaServ.Parameters.AddWithValue("@IDFolio", idFolioVisible);
-                                    cmdHojaServ.Parameters.AddWithValue("@FolioHoja", txtServicio.Text.Trim());
+                                    cmdHojaServ.Parameters.AddWithValue("@FolioHoja", txtServicio.Text);
+                                    cmdHojaServ.Parameters.AddWithValue("@TipoServicio", (object)tipoServicio ?? DBNull.Value);
+                                    cmdHojaServ.Parameters.AddWithValue("@TipoEquipo", (object)tipoEquipo ?? DBNull.Value);
+                                    cmdHojaServ.Parameters.AddWithValue("@TipoSistema", (object)tipoSistema ?? DBNull.Value);
+                                    cmdHojaServ.Parameters.AddWithValue("@Descripcion", (object)descripcion ?? DBNull.Value);
                                     cmdHojaServ.Parameters.AddWithValue("@Censo", "No");
-                                    cmdHojaServ.Parameters.AddWithValue("@Descripcion", (object)descripcionCab ?? DBNull.Value);
                                     cmdHojaServ.ExecuteNonQuery();
                                 }
                             }
+
+                            
 
                             // Guardar Censos
                             foreach (DataGridViewRow hojaRow in dgvHoja.Rows)
@@ -659,14 +751,14 @@ namespace WindowsFormsApp1
                                 if (hojaRow.IsNewRow) continue;
 
                                 string queryHojaCenso = @"
-                            INSERT INTO Hojas_Servicio 
-                            (ID_Folio, Folio_Hoja, Censo)
-                            VALUES (@IDFolio, @FolioHoja, @Censo)";
+                                INSERT INTO Hojas_Servicio 
+                                (ID_Folio, Folio_Hoja, Censo,Descripcion)
+                                VALUES (@IDFolio, @FolioHoja, @Censo,@Descripcion)";
                                 using (SqlCommand cmdHojaCenso = new SqlCommand(queryHojaCenso, conn, transaction))
                                 {
                                     cmdHojaCenso.Parameters.AddWithValue("@IDFolio", idFolioVisible);
                                     cmdHojaCenso.Parameters.AddWithValue("@FolioHoja", hojaRow.Cells["HojaCenso"].Value?.ToString() ?? "");
-                                    cmdHojaCenso.Parameters.AddWithValue("@Descripcion", (object)descripcionCab ?? DBNull.Value);
+                                    cmdHojaCenso.Parameters.AddWithValue("@Descripcion","Censo de equipo");
                                     cmdHojaCenso.Parameters.AddWithValue("@Censo", "Si");
                                     cmdHojaCenso.ExecuteNonQuery();
                                 }
@@ -676,6 +768,10 @@ namespace WindowsFormsApp1
 
                             folioSolicitud = idFolioVisible.ToString();
                             MessageBox.Show($"Solicitud guardada correctamente con folio: {folioSolicitud}", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                          
+                            
+                            
                         }
                         catch (Exception ex)
                         {
@@ -712,12 +808,16 @@ namespace WindowsFormsApp1
             // Resto de tu código para autocompletar información
             string descripcion = filaSeleccionada.Cells["Descripcion"].Value?.ToString() ?? "";
             string nombreEmpresa = filaSeleccionada.Cells["Nombre_Empresa"].Value?.ToString() ?? "";
+            string nombreContacto = filaSeleccionada.Cells["Nombre_Contacto"].Value?.ToString() ?? "";
+            string nombreUsuario = filaSeleccionada.Cells["Nombre_Usuario"].Value?.ToString() ?? "";
 
             // Autocompletado en dgvServicios y comboboxes
             int nuevaFila = dgvServicios.Rows.Add();
             dgvServicios.Rows[nuevaFila].Cells["Descripcion"].Value = descripcion;
             dgvServicios.Rows[nuevaFila].Cells["Tipo_Sistema"].Value = "N/A";
             cmbProveedor.Text = nombreEmpresa;
+            cmbContacto.Text = nombreContacto;
+            cmbEjecutivo.Text = nombreUsuario;
 
             // Fecha
             if (filaSeleccionada.Cells["Fecha_Solicitud"].Value != null &&
@@ -751,6 +851,67 @@ namespace WindowsFormsApp1
             }
 
             MessageBox.Show($"Servicio de '{nombreEmpresa}' agregado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            BtnBuscar empresa = new BtnBuscar();
+            empresa.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Agrega una nueva fila vacía al DataGridView de servicios
+            dgvServicios.Rows.Add(null, "", "", "", "");
+            // Opcional: selecciona la nueva fila para edición inmediata
+            int lastRow = dgvServicios.Rows.Count - 1;
+            dgvServicios.CurrentCell = dgvServicios.Rows[lastRow].Cells["Tipo_Servicio"];
+            dgvServicios.BeginEdit(true);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (dgvServicios.SelectedRows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dgvServicios.SelectedRows)
+                {
+                    if (!row.IsNewRow)
+                        dgvServicios.Rows.Remove(row);
+                }
+            }
+            else
+            {
+                 MessageBox.Show("Selecciona una fila para eliminar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            
+
+            if (dgvHoja.SelectedRows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dgvHoja.SelectedRows)
+                {
+                    if (!row.IsNewRow)
+                        dgvHoja.Rows.Remove(row);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona una fila para eliminar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Principal principal = new Principal();
+            principal.Show();
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            LimpiarCampos();
         }
     }
 }

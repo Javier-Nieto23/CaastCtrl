@@ -123,17 +123,17 @@
   <metadata name="Fecha_Solicitud.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="IDFolio.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="Status_Folio.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="Fecha_Solicitud.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="Firma.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="button1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
-        6gAAAOoB+Ss1JgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIiSURBVFhH1ZfB
+        5wAAAOcB8BtYtQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIiSURBVFhH1ZfB
         TsJAEIa5qY+ieDNR8cSh3aYXQkJjVJ5CwHjlROC5SEh4BUAwPehREhJb8LDOlCmF7W5tl5LIJF8C7T/z
         D7vb7VI4ilgydgnUfdNsLC3rNYlAA1r4XKR0veCl0pnP2AsUmwBck4lvWU1eLp9S2XTxw9gdJLtCMX1M
         831lGLdUPjlg6O4hyY8V2R8PcMhGHvTLD2Ee4ilHAuccBPkNu5oZt+0Tso2CFlwsYdFs8nm3y/1KJXZP
@@ -148,18 +148,18 @@
   </data>
   <data name="button2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        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
+        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
 </value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -18,6 +18,7 @@ namespace WindowsFormsApp1
     public partial class BtnBuscar : Form
     {
         private int? empresaSeleccionadaId = null;
+        private string empresaSeleccionadaNombre = null; // track name for context menu copy
         public BtnBuscar()
         {
             InitializeComponent();
@@ -33,13 +34,88 @@ namespace WindowsFormsApp1
             dataGridView1.ReadOnly = true;                      // Evita edición directa
             dataGridView1.AllowUserToAddRows = false;           // Evita fila vacía al final
             dataGridView1.CellClick += dataGridView1_CellClick;
+            dataGridView1.CellMouseDown += dataGridView1_CellMouseDown; // handle right-click selection
+
+            // Crear menú contextual para copiar nombre
+            var ctx = new ContextMenuStrip();
+            var copyItem = new ToolStripMenuItem("Copiar nombre");
+            copyItem.Click += CopyItem_Click;
+            ctx.Items.Add(copyItem);
+            dataGridView1.ContextMenuStrip = ctx;
+
+            dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
+
 
             comboBox1.SelectedIndex = 0; // Selección por defecto
             CargarEmpresas();
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) // evita que sea el encabezado
+            {
+                DataGridViewRow fila = dataGridView1.Rows[e.RowIndex];
+
+                // Guarda el ID de la empresa seleccionada
+                empresaSeleccionadaId = Convert.ToInt32(fila.Cells["ID_Empresa"].Value);
+
+                // Pasa los valores de la fila a los controles
+                textBox3.Text = fila.Cells["Nombre_Empresa"].Value?.ToString();
+                textBox6.Text = fila.Cells["Nombre_Corto"].Value?.ToString();
+                textBox2.Text = fila.Cells["Direccion"].Value?.ToString();
+                textBox4.Text = fila.Cells["No_Cliente"].Value?.ToString();
+                comboBox1.Text = fila.Cells["Perfil"].Value?.ToString();
+                textBox5.Text = fila.Cells["Cantidad_Dias"].Value?.ToString();
+
+                // Manejo de fecha
+                object valorFecha = fila.Cells["Fecha_Inicio"].Value;
+                if (valorFecha != null && DateTime.TryParse(valorFecha.ToString(), out DateTime fecha))
+                {
+                    dateTimePicker1.Value = fecha;
+                }
+                else
+                {
+                    dateTimePicker1.Value = DateTime.Today;
+                    MessageBox.Show("La fecha de inicio no es válida o está vacía.");
+                }
+            }
+        }
 
 
+        private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Seleccionar la fila al hacer clic derecho para que el menú actúe sobre ella
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
+            {
+                dataGridView1.ClearSelection();
+                dataGridView1.Rows[e.RowIndex].Selected = true;
+                var fila = dataGridView1.Rows[e.RowIndex];
+                empresaSeleccionadaNombre = fila.Cells["Nombre_Empresa"].Value?.ToString();
+                // establecer CurrentCell para permitir operaciones que dependen de ella
+                if (dataGridView1.Columns.Count > 1 && fila.Cells[1] != null)
+                {
+                    dataGridView1.CurrentCell = fila.Cells[1];
+                }
+            }
+        }
 
+        private void CopyItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(empresaSeleccionadaNombre))
+            {
+                MessageBox.Show("No hay nombre seleccionado para copiar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            try
+            {
+                Clipboard.SetText(empresaSeleccionadaNombre);
+                
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -48,6 +124,7 @@ namespace WindowsFormsApp1
             {
                 DataGridViewRow fila = dataGridView1.Rows[e.RowIndex];
                 empresaSeleccionadaId = Convert.ToInt32(fila.Cells[0].Value);
+                empresaSeleccionadaNombre = fila.Cells[1].Value?.ToString();
             }
         }
 
@@ -61,8 +138,12 @@ namespace WindowsFormsApp1
 
                 dataGridView1.Columns.Add("ID_Empresa", "ID");
                 dataGridView1.Columns.Add("Nombre_Empresa", "Empresa");
+                dataGridView1.Columns["Nombre_Empresa"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                dataGridView1.Columns["Nombre_Empresa"].Width = 370; // Ancho en píxeles
                 dataGridView1.Columns.Add("Nombre_Corto", "Nombre Corto");
                 dataGridView1.Columns.Add("Direccion", "Dirección");
+                dataGridView1.Columns["Direccion"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                dataGridView1.Columns["Direccion"].Width = 400; // Ancho en píxeles
                 dataGridView1.Columns.Add("No_Cliente", "No Cliente");
                 dataGridView1.Columns.Add("Perfil", "Perfil");
                 dataGridView1.Columns.Add("Fecha_Inicio", "Fecha Inicio");
@@ -251,15 +332,15 @@ namespace WindowsFormsApp1
         {
             string nombreEmpresa = null;
 
-            if (dataGridView1.SelectedRows.Count > 0)
+            if (dataGridView1.SelectedRows.Count > 1)
             {
                 // Obtener el nombre de la empresa de la fila seleccionada
-                nombreEmpresa = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+                nombreEmpresa = dataGridView1.SelectedRows[1].Cells[1].Value.ToString();
             }
             else if (dataGridView1.CurrentCell != null)
             {
                 int rowIndex = dataGridView1.CurrentCell.RowIndex;
-                nombreEmpresa = dataGridView1.Rows[rowIndex].Cells[0].Value.ToString();
+                nombreEmpresa = dataGridView1.Rows[rowIndex].Cells[1].Value.ToString();
             }
             //validar que se selecciono una empresa
             if (string.IsNullOrEmpty(nombreEmpresa))
@@ -363,6 +444,12 @@ namespace WindowsFormsApp1
             comboBox1.SelectedIndex = 0;
             dateTimePicker1.Value = DateTime.Now;
             empresaSeleccionadaId = null; // reset para nuevo registro
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+            CargarEmpresas();
         }
     }
     

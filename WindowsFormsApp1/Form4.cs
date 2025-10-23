@@ -1,5 +1,8 @@
-﻿using iTextSharp.text;
+﻿using CaastCtrl;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Mysqlx;
+using Org.BouncyCastle.Asn1.Cmp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,20 +20,209 @@ namespace WindowsFormsApp1
 
         //variable que lee el id del folio
         private string _idFolio;
-
+        private string connStr;
+        private string folioServicio;
 
         public Form4(string idFolio)
         {
             InitializeComponent();
             _idFolio = idFolio;
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.Load += SolicitudServicio_Load;
+
+            //hace que no se pueda editar el textbox del Hojas de servicio
+           // textBox8.ReadOnly = true;
+
+            textBox2.ReadOnly = true;
+
+
+
             CargarDatosFolio();
-            groupBox1.Text = $"Datos de la solicitud - Folio: {_idFolio}";
+
+
+            cmbRazon_Social2.DropDownStyle = ComboBoxStyle.DropDown;
+            cmbRazon_Social2.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbRazon_Social2.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+
+            dgvServicios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvServicios.MultiSelect = false; // Opcional, para permitir solo una fila seleccionada
+
+            ObtenerEstadoFirma();
+        }
+
+        private void ObtenerEstadoFirma()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    conn.Open();
+                    textBox3.ReadOnly = true;
+
+                    // Consulta solo el registro del folio que te interesa
+                    string query = "SELECT Firma_Recibido FROM Solicitud_Folio WHERE ID_Folio = @Folio";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        // Asegúrate de que textBox1 tiene el ID_Folio que buscas
+                        cmd.Parameters.AddWithValue("@Folio", textBox2.Text);
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            //Asigna el valor del campo Firma_Recibido directamente al textBox3
+                            textBox3.Text = reader["Firma_Recibido"] == DBNull.Value
+                                ? "No firmado"
+                                : reader["Firma_Recibido"].ToString();
+                        }
+
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("Error al cargar estado de firma: " + sqlEx.Message);
+            }
+        }
+
+
+
+        private string ObtenerFirmaTecnicoActual()
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                conn.Open();
+                string query = @"
+                        SELECT 
+                            COALESCE(Firma_Tecnico, CONCAT(Nombre, ' ', Apellido)) AS Firma
+                        FROM Usuarios_Caast
+                        WHERE ID_Usuario = @idUsuario";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+                    object result = cmd.ExecuteScalar();
+                    return result?.ToString() ?? "Firma desconocida";
+                }
+            }
+        }
+
+        //metodo para cargar a los usuarios
+        private void CargarEjecutivos()
+        {
+            try
+            {
+                //Abre la conexion SQL usando 
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    //Consulta para validar la existencia de usuarios de la BD 
+                    conn.Open();
+                    string query = "SELECT Nombre_Usuario FROM Usuarios_Caast";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    cmbEjecutivo.Items.Clear();
+
+                    while (reader.Read())
+                    {
+                        cmbEjecutivo.Items.Add(reader["Nombre_Usuario"].ToString());
+                    }
+
+                    reader.Close();
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("Error al cargar ejecutivos: " + sqlEx.Message);
+            }
+        }
+        //metodo para generar la solicitud de servicio 
+        private void SolicitudServicio_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = "SELECT Nombre_Empresa FROM Empresas";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    cmbRazon_Social2.Items.Clear();
+
+                    while (reader.Read())
+                    {
+                        cmbRazon_Social2.Items.Add(reader["Nombre_Empresa"].ToString());
+                    }
+
+                    reader.Close();
+                }
+                CargarEjecutivos();
+                
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("Error de SQL: " + sqlEx.Message);
+            }
 
         }
 
+        private void cmbProveedor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbRazon_Social2.SelectedItem != null)
+            {
+                string empresaSeleccionada = cmbRazon_Social2.SelectedItem.ToString();
+
+                try
+                {
+                    using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                    {
+                        conn.Open();
+
+                        // Obtener número de cliente
+                        string queryCliente = "SELECT No_Cliente FROM Empresas WHERE Nombre_Empresa = @empresa";
+                        SqlCommand cmdCliente = new SqlCommand(queryCliente, conn);
+                        cmdCliente.Parameters.AddWithValue("@empresa", empresaSeleccionada);
+                        object result = cmdCliente.ExecuteScalar();
+                        textBox7.Text = result != null ? result.ToString() : string.Empty;
+
+                        // Obtener contactos de la empresa
+                        string queryContactos = "SELECT c.Nombre_Contacto FROM Contacto_Empresa c " +
+                            "INNER JOIN Empresas e on e.ID_Empresa = c.ID_Empresa " +
+                            "WHERE e.Nombre_Empresa = @empresa";
+                        SqlCommand cmdContactos = new SqlCommand(queryContactos, conn);
+                        cmdContactos.Parameters.AddWithValue("@empresa", empresaSeleccionada);
+
+                        SqlDataReader reader = cmdContactos.ExecuteReader();
+                        cmbNombre_Contacto.Items.Clear();
+
+                        while (reader.Read())
+                        {
+                            cmbNombre_Contacto.Items.Add(reader["Nombre_Contacto"].ToString());
+                        }
+
+                        reader.Close();
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    MessageBox.Show("Error al obtener datos de la empresa: " + sqlEx.Message);
+                }
+            }
+        }
+
+
+
+
         private void CargarDatosFolio()
         {
+
+            dgvServicios.DataError += (s, e) => { e.ThrowException = false; };
+
+
             // Leer la cadena de conexión desde config.txt
             string filePath = Path.Combine(Application.StartupPath, "config.txt");
             var config = new System.Collections.Generic.Dictionary<string, string>();
@@ -42,10 +234,16 @@ namespace WindowsFormsApp1
                     config[parts[0].Trim()] = parts[1].Trim();
                 }
             }
-            string connStr = $"Server={config["Server"]};Database={config["Database"]};User Id={config["User Id"]};Password={config["Password"]};";
+            connStr = $"Server={config["Server"]};Database={config["Database"]};User Id={config["User Id"]};Password={config["Password"]};";
 
             // --- Configurar dgvServicios ---
             dgvServicios.Columns.Clear();
+
+            // Columna oculta ID_Hoja (clave primaria de Hojas_Servicio)
+            DataGridViewTextBoxColumn idHojaCol = new DataGridViewTextBoxColumn();
+            idHojaCol.Name = "ID_Hoja";
+            idHojaCol.HeaderText = "ID Hoja";
+            dgvServicios.Columns.Add(idHojaCol);
 
 
             // Columna Tipo_Servicio (ComboBox)
@@ -70,6 +268,7 @@ namespace WindowsFormsApp1
             DataGridViewTextBoxColumn descripcionCol = new DataGridViewTextBoxColumn();
             descripcionCol.Name = "Descripcion";
             descripcionCol.HeaderText = "Descripción";
+            descripcionCol.Width = 337;
             dgvServicios.Columns.Add(descripcionCol);
 
 
@@ -84,10 +283,15 @@ namespace WindowsFormsApp1
             {
                 conn.Open();
                 string query = @"
-                    SELECT TOP 1 hs.Descripcion, ci.Tipo_Equipo, ci.Tipo_Servicio,ci.Tipo_Sistema
-                    FROM Control_Interno as ci
-                    INNER JOIN Hojas_Servicio as hs ON ci.ID_Folio = hs.ID_Folio
-                    WHERE ci.ID_Folio = @idFolio";
+                    SELECT hs.ID_Hoja, hs.Tipo_Servicio, hs.Tipo_Equipo, hs.Tipo_Sistema, hs.Descripcion
+                    FROM Hojas_Servicio as hs
+                    INNER JOIN Control_Interno as ci ON ci.ID_Folio = hs.ID_Folio
+                    WHERE ci.ID_Folio = @idFolio
+                      AND hs.Censo = 'No'
+                      AND hs.Tipo_Servicio IS NOT NULL AND hs.Tipo_Servicio <> ''
+                      AND hs.Tipo_Equipo IS NOT NULL AND hs.Tipo_Equipo <> ''
+                      AND hs.Tipo_Sistema IS NOT NULL AND hs.Tipo_Sistema <> ''
+                      AND hs.Descripcion IS NOT NULL AND hs.Descripcion <> ''";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@idFolio", _idFolio);
@@ -95,23 +299,25 @@ namespace WindowsFormsApp1
                     {
                         while (reader.Read())
                         {
-                            // Agrega opciones únicas a los ComboBox
-                            if (reader["Tipo_Equipo"] != DBNull.Value)
-                                equipos.Add(reader["Tipo_Equipo"].ToString());
-                            if (reader["Tipo_Sistema"] != DBNull.Value)
-                                sistema.Add(reader["Tipo_Sistema"].ToString());
-                            if (reader["Tipo_Servicio"] != DBNull.Value)
-                                servicios.Add(reader["Tipo_Servicio"].ToString());
+                            int? idHoja = reader["ID_Hoja"]!= DBNull.Value ? (int?)Convert.ToInt32(reader["ID_Hoja"]): null;
+                            string tipoServicio = reader["Tipo_Servicio"]?.ToString() ?? "";
+                            string tipoEquipo = reader["Tipo_Equipo"]?.ToString() ?? "";
+                            string tipoSistema = reader["Tipo_Sistema"]?.ToString() ?? "";
 
-                            // Agrega la fila al grid
-                            dgvServicios.Rows.Add(
 
-                                reader["Tipo_Servicio"]?.ToString() ?? "",
-                                reader["Tipo_Equipo"]?.ToString() ?? "",
-                                reader["Tipo_Sistema"]?.ToString() ?? "",
-                                reader["Descripcion"]?.ToString() ?? ""
 
-                            );
+                            if (!tipoServicioCol.Items.Contains(tipoServicio) && tipoServicio != "")
+                                tipoServicioCol.Items.Add(tipoServicio);
+
+                            if (!tipoEquipoCol.Items.Contains(tipoEquipo) && tipoEquipo != "")
+                                tipoEquipoCol.Items.Add(tipoEquipo);
+
+                            if (!tipoSistemaCol.Items.Contains(tipoSistema) && tipoSistema != "")
+                                tipoSistemaCol.Items.Add(tipoSistema);
+
+                            // Ahora agrega la fila al grid
+                            dgvServicios.Rows.Add(idHoja,tipoServicio, tipoEquipo, tipoSistema, reader["Descripcion"]?.ToString() ?? "");
+
                         }
                     }
                 }
@@ -166,10 +372,11 @@ namespace WindowsFormsApp1
                 }
             }
 
+            
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                string query = "SELECT Folio_Hoja FROM Hojas_Servicio WHERE ID_Folio = @idFolio AND Censo = 'NO'";
+                string query = "SELECT Folio_Hoja FROM Hojas_Servicio WHERE ID_Folio = @idFolio AND Censo = 'No'";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@idFolio", _idFolio);
@@ -177,8 +384,8 @@ namespace WindowsFormsApp1
                     {
                         if (reader.Read())
                         {
-                            textBox8.Text = reader["Folio_Hoja"].ToString();
-
+                            
+                            folioServicio = textBox8.Text = reader["Folio_Hoja"].ToString();
                         }
                     }
                 }
@@ -200,6 +407,7 @@ namespace WindowsFormsApp1
                         if (reader.Read())
                         {
                             txtCotizacion2.Text = reader["No_Cotizacion"].ToString();
+                            textBox2.Text = reader["ID_Folio"].ToString();
                             txtPedido.Text = reader["No_Pedido"].ToString();
                             cmbRazon_Social2.Text = reader["Razon_Social"].ToString();
                             textBox7.Text = reader["No_Cliente"].ToString();
@@ -228,23 +436,23 @@ namespace WindowsFormsApp1
             this.Close();
         }
 
+
+        //boton de guardar 
         private void button3_Click(object sender, EventArgs e)
         {
-            // Leer la cadena de conexión desde config.txt
-            string filePath = Path.Combine(Application.StartupPath, "config.txt");
-            var config = new System.Collections.Generic.Dictionary<string, string>();
-            foreach (string line in File.ReadAllLines(filePath))
+
+            string idFolioNuevo = textBox2.Text.Trim();  // ID_Folio (Folio de solicitud)
+            string folioHoja = textBox8.Text.Trim();     // Folio_Hoja (Hoja de servicio)
+
+            if (string.IsNullOrWhiteSpace(idFolioNuevo))
             {
-                if (!string.IsNullOrWhiteSpace(line) && line.Contains("="))
-                {
-                    var parts = line.Split('=');
-                    config[parts[0].Trim()] = parts[1].Trim();
-                }
+                MessageBox.Show("Ingrese un folio válido en TextBox2 (ID_Folio).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            string connStr = $"Server={config["Server"]};Database={config["Database"]};User Id={config["User Id"]};Password={config["Password"]};";
 
             try
             {
+
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     conn.Open();
@@ -252,126 +460,196 @@ namespace WindowsFormsApp1
                     {
                         try
                         {
-                            // Actualizar datos principales del folio en Control_Interno
-                            string updateFolio = @"
-                                UPDATE Control_Interno SET
-                                    No_Cotizacion = @NoCotizacion,
-                                    No_Pedido = @NoPedido,
-                                    Razon_Social = @RazonSocial,
-                                    No_Cliente = @NoCliente,
-                                    Nombre_Contacto = @NombreContacto,
-                                    Fecha_Solicitud = @FechaSolicitud,
-                                    Ejecutivo_Asignado = @Ejecutivo
-                                WHERE ID_Folio = @idFolio";
-                            using (SqlCommand cmd = new SqlCommand(updateFolio, conn, transaction))
+                            // --- 1️ Actualizar Control_Interno ---
+                            string updateCI = @"
+                            UPDATE Control_Interno SET
+                                ID_Folio = @folioNuevo,
+                                No_Cotizacion = @NoCotizacion,
+                                No_Pedido = @NoPedido,
+                                Razon_Social = @RazonSocial,
+                                No_Cliente = @NoCliente,
+                                Nombre_Contacto = @NombreContacto,
+                                Fecha_Solicitud = @FechaSolicitud,
+                                Ejecutivo_Asignado = @Ejecutivo
+                            WHERE ID_Folio = @folioAntiguo";
+
+                            using (SqlCommand cmd = new SqlCommand(updateCI, conn, transaction))
                             {
+                                cmd.Parameters.AddWithValue("@folioNuevo", idFolioNuevo);
+                                cmd.Parameters.AddWithValue("@folioAntiguo", _idFolio);
                                 cmd.Parameters.AddWithValue("@NoCotizacion", txtCotizacion2.Text);
                                 cmd.Parameters.AddWithValue("@NoPedido", txtPedido.Text);
                                 cmd.Parameters.AddWithValue("@RazonSocial", cmbRazon_Social2.Text);
                                 cmd.Parameters.AddWithValue("@NoCliente", textBox7.Text);
                                 cmd.Parameters.AddWithValue("@NombreContacto", cmbNombre_Contacto.Text);
                                 cmd.Parameters.AddWithValue("@FechaSolicitud", dateTimePicker1.Value);
-
                                 cmd.Parameters.AddWithValue("@Ejecutivo", cmbEjecutivo.Text);
-                                cmd.Parameters.AddWithValue("@idFolio", _idFolio);
                                 cmd.ExecuteNonQuery();
                             }
 
-                            string UpdateFolioHoja = @"
-                                UPDATE Hojas_Servicio SET
-                                    Folio_Hoja = @FolioHoja
-                                WHERE ID_Folio = @idFolio AND Censo = 'NO'";
-                            using (SqlCommand cmd = new SqlCommand(UpdateFolioHoja, conn, transaction))
-
+                            // --- 2️ Actualizar Solicitud_Folio ---
+                            string updateSF = @"UPDATE Solicitud_Folio SET ID_Folio = @folioNuevo WHERE ID_Folio = @folioAntiguo";
+                            using (SqlCommand cmd = new SqlCommand(updateSF, conn, transaction))
                             {
-                                cmd.Parameters.AddWithValue("@FolioHoja", string.IsNullOrEmpty(textBox8.Text) ? (object)DBNull.Value : textBox8.Text);
-                                cmd.Parameters.AddWithValue("@idFolio", _idFolio);
+                                cmd.Parameters.AddWithValue("@folioNuevo", idFolioNuevo);
+                                cmd.Parameters.AddWithValue("@folioAntiguo", _idFolio);
                                 cmd.ExecuteNonQuery();
                             }
 
+                            
 
-                            // Actualizar datos de servicios (solo la primera fila, puedes adaptar para varias)
-                            if (dgvServicios.Rows.Count > 0 && !dgvServicios.Rows[0].IsNewRow)
+                            // --- 4️ Insertar censos (Censo = 'SI') ---
+                            foreach (DataGridViewRow row in dgvHoja.Rows)
                             {
-                                var tipoServicio = dgvServicios.Rows[0].Cells["Tipo_Servicio"].Value?.ToString();
-                                var tipoEquipo = dgvServicios.Rows[0].Cells["Tipo_Equipo"].Value?.ToString();
-                                var tipoSistema = dgvServicios.Rows[0].Cells["Tipo_Sistema"].Value?.ToString();
+                                if (row.IsNewRow) continue;
+                                string hojaCenso = row.Cells["HojaCenso"].Value?.ToString();
+                                if (!string.IsNullOrWhiteSpace(hojaCenso))
+                                {
+                                    string insertCenso = @"
+                                    IF NOT EXISTS (SELECT 1 FROM Hojas_Servicio WHERE Folio_Hoja = @folioHoja AND ID_Folio = @folioNuevo)
+                                    BEGIN
+                                        INSERT INTO Hojas_Servicio (ID_Folio, Folio_Hoja, Censo)
+                                        VALUES (@folioNuevo, @folioHoja, 'Si')
+                                    END";
 
+                                    using (SqlCommand cmd = new SqlCommand(insertCenso, conn, transaction))
+                                    {
+                                        cmd.Parameters.AddWithValue("@folioNuevo", idFolioNuevo);
+                                        cmd.Parameters.AddWithValue("@folioHoja", hojaCenso);
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                }
+                            }
 
+                            // Obtener el nuevo número de hoja de servicio ingresado
+                            string nuevoFolioHoja = textBox8.Text.Trim();
 
-                                string updateServicio = @"
-                                    UPDATE Control_Interno SET
+                            foreach (DataGridViewRow row in dgvServicios.Rows)
+                            {
+                                if (row.IsNewRow) continue;
+                                string nuevoTipoServicio = row.Cells["Tipo_Servicio"].Value?.ToString();
+                                string nuevoTipoEquipo = row.Cells["Tipo_Equipo"].Value?.ToString();
+                                string nuevoTipoSistema = row.Cells["Tipo_Sistema"].Value?.ToString();
+                                string nuevaDescripcion = row.Cells["Descripcion"].Value?.ToString();
+
+                                // Solo continuar si al menos uno de los campos tiene valor
+                                if (string.IsNullOrWhiteSpace(nuevoTipoServicio) &&
+                                    string.IsNullOrWhiteSpace(nuevoTipoEquipo) &&
+                                    string.IsNullOrWhiteSpace(nuevoTipoSistema) &&
+                                    string.IsNullOrWhiteSpace(nuevaDescripcion))
+                                {
+                                    continue; // No agregar ni actualizar si todos son nulos o vacíos
+                                }
+
+                                string updateQuery = @"
+                                    UPDATE Hojas_Servicio
+                                    SET Folio_Hoja = @FolioHoja,
                                         Tipo_Servicio = @TipoServicio,
                                         Tipo_Equipo = @TipoEquipo,
-                                        Tipo_Sistema = @TipoSistema
-                                        
-                                    WHERE ID_Folio = @idFolio";
-                                using (SqlCommand cmd = new SqlCommand(updateServicio, conn, transaction))
-                                {
-                                    cmd.Parameters.AddWithValue("@TipoServicio", string.IsNullOrEmpty(tipoServicio) ? (object)DBNull.Value : tipoServicio);
-                                    cmd.Parameters.AddWithValue("@TipoEquipo", string.IsNullOrEmpty(tipoEquipo) ? (object)DBNull.Value : tipoEquipo);
-                                    cmd.Parameters.AddWithValue("@TipoSistema", string.IsNullOrEmpty(tipoSistema) ? (object)DBNull.Value : tipoSistema);
+                                        Tipo_Sistema = @TipoSistema,
+                                        Descripcion = @Descripcion
+                                    WHERE ID_Folio = @IDFolio
+                                      AND Censo = 'No'";
 
-                                    cmd.Parameters.AddWithValue("@idFolio", _idFolio);
+                                using (SqlCommand cmd = new SqlCommand(updateQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@FolioHoja", nuevoFolioHoja);
+                                    cmd.Parameters.AddWithValue("@TipoServicio", nuevoTipoServicio);
+                                    cmd.Parameters.AddWithValue("@TipoEquipo", nuevoTipoEquipo);
+                                    cmd.Parameters.AddWithValue("@TipoSistema", nuevoTipoSistema);
+                                    cmd.Parameters.AddWithValue("@Descripcion", nuevaDescripcion);
+                                    cmd.Parameters.AddWithValue("@IDFolio", _idFolio);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
-                            if (dgvServicios.Rows.Count > 0 && !dgvServicios.Rows[0].IsNewRow)
+
+                            // --- 5️ Actualizar o insertar servicios ---
+                            foreach (DataGridViewRow row in dgvServicios.Rows)
                             {
-                                var Descripcion = dgvServicios.Rows[0].Cells["Descripcion"].Value?.ToString();
+                                if (row.IsNewRow) continue;
+                                string tipoServicio = row.Cells["Tipo_Servicio"].Value?.ToString();
+                                string tipoEquipo = row.Cells["Tipo_Equipo"].Value?.ToString();
+                                string tipoSistema = row.Cells["Tipo_Sistema"].Value?.ToString();
+                                string descripcion = row.Cells["Descripcion"].Value?.ToString();
 
-
-                                string updateDescripcion = @"
-                                    UPDATE Hojas_Servicio SET
-                                        Descripcion = @Descripcion   
-                                    WHERE ID_Folio = @idFolio";
-                                using (SqlCommand cmd = new SqlCommand(updateDescripcion, conn, transaction))
+                                // Solo continuar si al menos uno de los campos tiene valor
+                                if (string.IsNullOrWhiteSpace(tipoServicio) &&
+                                    string.IsNullOrWhiteSpace(tipoEquipo) &&
+                                    string.IsNullOrWhiteSpace(tipoSistema) &&
+                                    string.IsNullOrWhiteSpace(descripcion))
                                 {
+                                    continue; // No agregar ni actualizar si todos son nulos o vacíos
+                                }
 
-                                    cmd.Parameters.AddWithValue("@Descripcion", string.IsNullOrEmpty(Descripcion) ? (object)DBNull.Value : Descripcion);
-                                    cmd.Parameters.AddWithValue("@idFolio", _idFolio);
-                                    cmd.ExecuteNonQuery();
+                                string hojaServicio = textBox8.Text.Trim(); // Folio_Hoja del TextBox
+
+                                object idHojaCell = row.Cells["ID_Hoja"].Value;
+                                int idHojaGrid = 0;
+                                bool tieneIdHoja = idHojaCell != null && int.TryParse(idHojaCell.ToString(), out idHojaGrid) && idHojaGrid > 0;
+
+                                if (tieneIdHoja)
+                                {
+                                    // Actualizar si ya existe (por ID_Folio y ID_Hoja)
+                                    string updateServicio = @"
+                                    UPDATE Hojas_Servicio SET
+                                        Tipo_Servicio = @TipoServicio,
+                                        Tipo_Equipo = @TipoEquipo,
+                                        Tipo_Sistema = @TipoSistema,
+                                        Descripcion = @Descripcion
+                                    WHERE ID_Folio = @IDFolio AND ID_Hoja = @IDHoja AND Censo = 'No'";
+
+                                    using (SqlCommand cmdUpdate = new SqlCommand(updateServicio, conn, transaction))
+                                    {
+                                        cmdUpdate.Parameters.AddWithValue("@TipoServicio", (object)tipoServicio ?? DBNull.Value);
+                                        cmdUpdate.Parameters.AddWithValue("@TipoEquipo", (object)tipoEquipo ?? DBNull.Value);
+                                        cmdUpdate.Parameters.AddWithValue("@TipoSistema", (object)tipoSistema ?? DBNull.Value);
+                                        cmdUpdate.Parameters.AddWithValue("@Descripcion", (object)descripcion ?? DBNull.Value);
+                                        cmdUpdate.Parameters.AddWithValue("@IDFolio", idFolioNuevo);
+                                        cmdUpdate.Parameters.AddWithValue("@IDHoja", idHojaGrid);
+                                        cmdUpdate.ExecuteNonQuery();
+                                    }
+                                }
+                                else
+                                {
+                                    // Insertar si no existe (no hay ID_Hoja en la fila)
+                                    string insertServicio = @"
+                                    INSERT INTO Hojas_Servicio
+                                        (ID_Folio, Folio_Hoja, Tipo_Servicio, Tipo_Equipo, Tipo_Sistema, Descripcion, Censo)
+                                    VALUES
+                                        (@folioNuevo, @FolioHoja, @TipoServicio, @TipoEquipo, @TipoSistema, @Descripcion, 'NO');
+                                    SELECT SCOPE_IDENTITY();";
+
+                                    using (SqlCommand cmdInsert = new SqlCommand(insertServicio, conn, transaction))
+                                    {
+                                        cmdInsert.Parameters.AddWithValue("@folioNuevo", idFolioNuevo);
+                                        cmdInsert.Parameters.AddWithValue("@FolioHoja", hojaServicio);
+                                        cmdInsert.Parameters.AddWithValue("@TipoServicio", (object)tipoServicio ?? DBNull.Value);
+                                        cmdInsert.Parameters.AddWithValue("@TipoEquipo", (object)tipoEquipo ?? DBNull.Value);
+                                        cmdInsert.Parameters.AddWithValue("@TipoSistema", (object)tipoSistema ?? DBNull.Value);
+                                        cmdInsert.Parameters.AddWithValue("@Descripcion", (object)descripcion ?? DBNull.Value);
+
+                                        var nuevoID = cmdInsert.ExecuteScalar();
+                                        if (nuevoID != null)
+                                            row.Cells["ID_Hoja"].Value = Convert.ToInt32(nuevoID);
+                                    }
                                 }
                             }
 
+
+
+
+                            // --- 6️ Confirmar transacción ---
                             transaction.Commit();
-                            MessageBox.Show("Datos actualizados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            _idFolio = idFolioNuevo;
+
+                            MessageBox.Show("Folio y datos actualizados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            CargarDatosFolio();
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            MessageBox.Show("No Puede Existir una solicitud de servicio sin Hoja de Servicio o Censo ", "Error", MessageBoxButtons.OK);
+                            MessageBox.Show("Error al actualizar folio: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        // Insertar nuevas hojas de censo del grid dgvHoja
-                        foreach (DataGridViewRow row in dgvHoja.Rows)
-                        {
-                            if (row.IsNewRow) continue;
-                            var folioHoja = row.Cells["HojaCenso"].Value?.ToString();
-                            if (string.IsNullOrWhiteSpace(folioHoja)) continue;
-
-                            // Verificar si ya existe la hoja en la base de datos
-                            string checkQuery = "SELECT COUNT(*) FROM Hojas_Servicio WHERE ID_Folio = @idFolio AND Folio_Hoja = @folioHoja AND Censo = 'Si'";
-                            using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn, transaction))
-                            {
-                                checkCmd.Parameters.AddWithValue("@idFolio", _idFolio);
-                                checkCmd.Parameters.AddWithValue("@folioHoja", folioHoja);
-                                int count = (int)checkCmd.ExecuteScalar();
-                                if (count == 0)
-                                {
-                                    // Insertar la hoja de censo
-                                    string insertQuery = @"
-                                    INSERT INTO Hojas_Servicio (ID_Folio, Folio_Hoja, Censo)
-                                    VALUES (@idFolio, @folioHoja, 'Si')";
-                                    using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn, transaction))
-                                    {
-                                        insertCmd.Parameters.AddWithValue("@idFolio", _idFolio);
-                                        insertCmd.Parameters.AddWithValue("@folioHoja", folioHoja);
-                                        insertCmd.ExecuteNonQuery();
-                                    }
-                                }
-                            }
-                        }
-
                     }
                 }
             }
@@ -379,19 +657,26 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("Error de conexión: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
 
             // Verificar que el TextBox no esté vacío
-            if (!string.IsNullOrWhiteSpace(textBox1.Text))
+            string folio = textBox1.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(folio))
             {
+                // Verificar duplicados antes de agregar
+                if (dgvHoja.Rows.Cast<DataGridViewRow>().Any(r => r.Cells["HojaCenso"].Value?.ToString() == folio))
+                {
+                    MessageBox.Show("Este folio ya existe.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Crear una nueva fila
                 int index = dgvHoja.Rows.Add();
-
-                // Asignar el valor del TextBox a la primera columna (por ejemplo, Folio)
-                dgvHoja.Rows[index].Cells["HojaCenso"].Value = textBox1.Text;
+                dgvHoja.Rows[index].Cells["HojaCenso"].Value = folio;
 
                 // Limpiar el TextBox
                 textBox1.Clear();
@@ -454,19 +739,14 @@ namespace WindowsFormsApp1
                 // Carga la imagen
                 iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
                 logo.ScaleAbsolute(150, 150); // tamaño del logo
-                logo.Alignment = Element.ALIGN_RIGHT;
-                logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 170,
-                                         doc.PageSize.Height - doc.TopMargin - 100);
+                logo.Alignment = Element.ALIGN_LEFT;
+                logo.SetAbsolutePosition(doc.PageSize.Width - doc.RightMargin - 790,
+                                         doc.PageSize.Height - doc.TopMargin - 98);
 
                 // Agregar al documento
                 doc.Add(logo);
 
-                // Folio en la parte superior izquierda
-                Paragraph folioEncabezado = new Paragraph("Folio: " + _idFolio,
-                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD));
-                folioEncabezado.Alignment = Element.ALIGN_LEFT; // 👈 alineado a la izquierda
-                doc.Add(folioEncabezado);
-                doc.Add(new Paragraph("\n"));
+   
 
 
                 // Título 3
@@ -478,7 +758,7 @@ namespace WindowsFormsApp1
                 doc.Add(new Paragraph("\n"));
 
                 // Título 1
-                Paragraph titulo = new Paragraph("Solicitud de Servicio",
+                Paragraph titulo = new Paragraph("Solicitud de Servicio: " + _idFolio,
                                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD));
                 titulo.Alignment = Element.ALIGN_CENTER;
 
@@ -502,8 +782,9 @@ namespace WindowsFormsApp1
                 PdfPCell cellCenso = new PdfPCell(new Phrase("Hoja de Censo", fuenteNegrita));
                 cellCenso.HorizontalAlignment = Element.ALIGN_CENTER;
                 cellCenso.BackgroundColor = new BaseColor(220, 220, 220);
+                cellCenso.FixedHeight = 29f;
                 tabla.AddCell(cellCenso);
-                cellCenso.FixedHeight = 30f;
+                
 
                 // Columna 2: concatenar todas las hojas de censo
                 string hojasCenso = string.Join(", ", dgvHoja.Rows
@@ -518,8 +799,9 @@ namespace WindowsFormsApp1
                 PdfPCell cellServicio = new PdfPCell(new Phrase("Hoja de Servicio", fuenteNegrita));
                 cellServicio.HorizontalAlignment = Element.ALIGN_CENTER;
                 cellServicio.BackgroundColor = new BaseColor(220, 220, 220);
+                cellServicio.FixedHeight = 29f;
                 tabla.AddCell(cellServicio);
-                cellServicio.FixedHeight = 30f;
+                
 
                 // --- Agregar fila ---
                 // Columna 1: folio del servicio
@@ -567,7 +849,7 @@ namespace WindowsFormsApp1
                 celda9.BackgroundColor = new BaseColor(220, 220, 220);
 
                 PdfPCell celda10 = new PdfPCell(new Phrase("CAAST "));
-                celda9.FixedHeight = 30f;
+                celda10.FixedHeight = 30f;
 
 
                 PdfPCell celda11 = new PdfPCell(new Phrase("Ejecutivo asignado "));
@@ -632,18 +914,32 @@ namespace WindowsFormsApp1
                 tablaServicios.AddCell("Equipo");
                 tablaServicios.AddCell("Tipo Sistema");
                 tablaServicios.AddCell("Descripción");
+                // Establecer anchos relativos (ajusta los valores según convenga)
+                tablaServicios.SetWidths(new float[] { 2f,2f,2f,2f });
+                // Esto hace que la columna "Descripción" sea más ancha que las otras
+
+                // Encabezados con negrita
+                iTextSharp.text.Font fuenteEncabezado =
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD);
+
+
+                float altoFilaServicios = 35f;
+
 
                 // Recorrer filas del DataGridView
                 foreach (DataGridViewRow row in dgvServicios.Rows)
                 {
                     if (row.IsNewRow) continue;
 
-                    tablaServicios.AddCell(row.Cells["Tipo_Servicio"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Tipo_Equipo"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Tipo_Sistema"].Value?.ToString());
-                    tablaServicios.AddCell(row.Cells["Descripcion"].Value?.ToString());
-                }
 
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Servicio"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Equipo"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Tipo_Sistema"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+                    tablaServicios.AddCell(new PdfPCell(new Phrase(row.Cells["Descripcion"].Value?.ToString())) { FixedHeight = altoFilaServicios });
+
+
+
+                }
 
 
 
@@ -651,10 +947,17 @@ namespace WindowsFormsApp1
                 doc.Add(new Paragraph("\n"));
 
 
+                string firma = ObtenerFirmaTecnicoActual();
+                Paragraph firmaParrafo = new Paragraph($"Firmado por: {firma}\nFecha: {DateTime.Now:MM/dd/yyyy}\nHora:{DateTime.Now: hh:mm:tt}", new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 16, iTextSharp.text.Font.BOLD));
+                firmaParrafo.Alignment = Element.ALIGN_LEFT;
+                doc.Add(firmaParrafo);
+
 
                 // Pie
                 doc.Add(new Paragraph("Generado automáticamente por el sistema de CAAST",
                             new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.ITALIC)));
+
+
 
 
                 doc.Close();
@@ -675,7 +978,7 @@ namespace WindowsFormsApp1
                 return;
             }
 
-            var folioHoja = filaSeleccionada.Cells[0].Value?.ToString();
+            var folioHoja = filaSeleccionada.Cells["HojaCenso"].Value?.ToString();
 
             if (string.IsNullOrWhiteSpace(folioHoja))
             {
@@ -728,10 +1031,99 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Error al eliminar el censo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Agrega una nueva fila vacía al DataGridView de servicios
+            dgvServicios.Rows.Add(null, "", "", "", "");
+            // Opcional: selecciona la nueva fila para edición inmediata
+            int lastRow = dgvServicios.Rows.Count - 1;
+            dgvServicios.CurrentCell = dgvServicios.Rows[lastRow].Cells["Tipo_Servicio"];
+            dgvServicios.BeginEdit(true);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // Usar CurrentRow en vez de SelectedRows
+            var filaSeleccionada = dgvServicios.CurrentRow;
+            if (filaSeleccionada == null || filaSeleccionada.IsNewRow)
+            {
+                MessageBox.Show("Seleccione el servicio que desea eliminar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var idHojaObj = filaSeleccionada.Cells["ID_Hoja"].Value;
+            if (idHojaObj == null || idHojaObj == DBNull.Value || string.IsNullOrWhiteSpace(idHojaObj.ToString()))
+            {
+                // Si no hay ID_Hoja, solo elimina la fila del grid (no está en BD)
+                dgvServicios.Rows.Remove(filaSeleccionada);
+                MessageBox.Show("Fila eliminada localmente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int idHoja;
+            if (!int.TryParse(idHojaObj.ToString(), out idHoja))
+            {
+                MessageBox.Show("ID_Hoja inválido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var confirm = MessageBox.Show($"¿Está seguro que desea eliminar el servicio con ID_Hoja '{idHoja}'?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes)
+                return;
+
+            // Eliminar de la base de datos
+            string filePath = Path.Combine(Application.StartupPath, "config.txt");
+            var config = new System.Collections.Generic.Dictionary<string, string>();
+            foreach (string line in File.ReadAllLines(filePath))
+            {
+                if (!string.IsNullOrWhiteSpace(line) && line.Contains("="))
+                {
+                    var parts = line.Split('=');
+                    config[parts[0].Trim()] = parts[1].Trim();
+                }
+            }
+            string connStr = $"Server={config["Server"]};Database={config["Database"]};User Id={config["User Id"]};Password={config["Password"]};";
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    conn.Open();
+                    string deleteQuery = "DELETE FROM Hojas_Servicio WHERE ID_Hoja = @idHoja";
+                    using (SqlCommand cmd = new SqlCommand(deleteQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@idHoja", idHoja);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            // eliminar la fila del DataGridView de servicios
+                            dgvServicios.Rows.Remove(filaSeleccionada);
+                            MessageBox.Show("Servicio eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error al eliminar servicio en la base de datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al eliminar el servicio: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            BtnBuscar empresa = new BtnBuscar();
+            empresa.Show();
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Principal principal = new Principal();
+            principal.Show();
+        }
     }
 }
-
-   
-    
-
-

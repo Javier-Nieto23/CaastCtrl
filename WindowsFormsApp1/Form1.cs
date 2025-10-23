@@ -28,7 +28,9 @@ namespace WindowsFormsApp1
             GridFolios();
         }
 
-        //metodo para llenar el datagridview con los folios
+        // Método para abrir otro form dentro
+       
+
 
         public void GridFolios()
         {
@@ -37,7 +39,7 @@ namespace WindowsFormsApp1
                 using (SqlConnection con = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
                 {
                     con.Open();
-                    string sql = @"SELECT ID_Folio,Fecha_Solicitud FROM Control_Interno";
+                    string sql = @"SELECT ci.ID_Folio,ci.Fecha_Solicitud,sf.Status_Folio FROM Control_Interno as ci INNER JOIN Solicitud_Folio as sf on ci.ID_Folio = sf.ID_Folio ";
                     SqlDataAdapter da = new SqlDataAdapter(sql, con);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
@@ -48,7 +50,8 @@ namespace WindowsFormsApp1
                         DateTime fecha = Convert.ToDateTime(dr["Fecha_Solicitud"]);
                         FolioGrid.Rows.Add(
                         dr["ID_Folio"].ToString(),
-                        fecha.ToString("MM/dd/yyyy")
+                        fecha.ToString("MM/dd/yyyy"),
+                        dr["Status_Folio"].ToString()
                         );
                     }
                 }
@@ -100,21 +103,80 @@ namespace WindowsFormsApp1
                 }
                 else
                 {
-                    SolicitudServicio mainForm = new SolicitudServicio();
-                    mainForm.Show();
+                    SolicitudServicio solicitudForm = new SolicitudServicio();
+                    solicitudForm.Show();   
                 }
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Form5 userForm= new Form5();
-            userForm.Show();
+            using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                conn.Open();
+                string TipoUsuario = "";
+
+                string query = "SELECT Tipo_Usuario FROM Usuarios_Caast WHERE ID_Usuario = @idUsuario";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    LoginService loginService = new LoginService();
+                    cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        TipoUsuario = reader["Tipo_Usuario"].ToString();
+                    }
+                }
+
+                // Verificar si el usuario es admin
+                if (TipoUsuario != "Admin")
+                {
+                    MessageBox.Show("No puedes ingresar si no eres admin");
+                }
+                else
+                {
+                    Form5 userForm = new Form5();
+                    userForm.Show();
+                }
+            }
+           
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = "SELECT Nombre_Usuario FROM Usuarios_Caast WHERE ID_Usuario = @idUsuario";
 
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            lblUsuario.Text = "Usuario: " + result.ToString(); 
+                            label8.Text ="Fecha: " + DateTime.Today.ToString("MM/dd/yyyy");
+                        }
+                        else
+                        {
+                            lblUsuario.Text = "Usuario: Desconocido";
+                        }
+                        
+                    }
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar el usuario: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblUsuario.Text = "Usuario: Error";
+            }
         }
 
         private void btnEditarFolio_Click(object sender, EventArgs e)
@@ -215,6 +277,16 @@ namespace WindowsFormsApp1
                                 cmdFolio.ExecuteNonQuery();
                             }
 
+                            // Borrar folio en Solicitud_Folio
+                            string deleteSolicitud = "DELETE FROM Solicitud_Folio WHERE ID_Folio = @idFolio";
+                            using (SqlCommand cmdFolio = new SqlCommand(deleteSolicitud, conn, transaction))
+                            {
+                                cmdFolio.Parameters.AddWithValue("@idFolio", idFolio);
+                                cmdFolio.ExecuteNonQuery();
+                            }
+
+
+
                             transaction.Commit();
                             MessageBox.Show("Folio y datos asociados borrados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -278,6 +350,7 @@ namespace WindowsFormsApp1
 
         private void button9_Click(object sender, EventArgs e)
         {
+            
             SocilitarFolio solicitarform = new SocilitarFolio();
             solicitarform.Show();
         }
@@ -285,6 +358,56 @@ namespace WindowsFormsApp1
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void button7_Click_1(object sender, EventArgs e)
+        {
+            GridFolios();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigConexion.ConfigHelper.GetConnectionString()))
+            {
+                conn.Open();
+                string TipoUsuario = "";
+
+                string query = "SELECT Tipo_Usuario FROM Usuarios_Caast WHERE ID_Usuario = @idUsuario";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    LoginService loginService = new LoginService();
+                    cmd.Parameters.AddWithValue("@idUsuario", LoginService.IdUsuarioActual);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        TipoUsuario = reader["Tipo_Usuario"].ToString();
+                    }
+                }
+
+                // Verificar si el usuario es admin
+                if (TipoUsuario != "Admin")
+                {
+                    MessageBox.Show("No puedes ingresar si no eres admin");
+                }
+                else
+                {
+                    
+                }
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            Principal principal = new Principal();  
+            principal.Show();
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            VentanaFolios folios = new VentanaFolios();
+            folios.Show();
         }
     }
 }
